@@ -1,0 +1,6 @@
+{
+  "files": [],
+  "references": [{ "path": "./apps/cloud-console" }],
+  // Include the config files themselves for linting
+  "include": ["vite.config.ts"]
+}

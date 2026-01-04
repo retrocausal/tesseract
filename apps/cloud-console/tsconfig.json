@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+
+    /* 1. We must generate types for the reference to work */
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "dist-types",
+
+    /* 2. THE FIX: Disable this. It is incompatible with 'composite' */
+    "allowImportingTsExtensions": false,
+
+    "baseUrl": ".",
+    "paths": {
+      "@cloud/*": ["src/*"],
+      "@cloud/struct/*": ["src/structures/*"],
+      "@cloud/utils/*": ["src/utils/*"],
+      "@cloud/modules/*": ["src/modules/*"],
+      "@cloud/types/*": ["types/*"],
+      "@cloud/mocks/*": ["mocks/*"]
+    },
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src", "types", "mocks"]
+}
