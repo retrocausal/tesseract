@@ -3,20 +3,21 @@
   "compilerOptions": {
     "composite": true,
 
-    /* 1. We must generate types for the reference to work */
     "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist-types",
 
-    /* 2. THE FIX: Disable this. It is incompatible with 'composite' */
     "allowImportingTsExtensions": false,
-
     "baseUrl": ".",
     "paths": {
+      /* 1. MISSING LINK: Map the shared library alias */
+      "@common-struct/*": ["../../structures/*"],
+      "@common-types/*": ["../../types/*"],
+
+      /* Local Mappings */
       "@cloud/*": ["src/*"],
-      "@cloud/struct/*": ["src/structures/*"],
       "@cloud/utils/*": ["src/utils/*"],
       "@cloud/modules/*": ["src/modules/*"],
       "@cloud/types/*": ["types/*"],
@@ -24,5 +25,15 @@
     },
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "types", "mocks"]
+  "include": [
+    "src", 
+    "types", 
+    "mocks",
+    "vite.config.ts"
+  ],
+  /* 2. MISSING LINK: Explicitly depend on the structure project */
+  "references": [
+    { "path": "../../structures" },
+    { "path": "../../types" }
+  ]
 }

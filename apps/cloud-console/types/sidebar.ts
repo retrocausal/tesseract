@@ -1,4 +1,4 @@
-export interface NavItem {
+export type NavItem = {
   id: string;
   parentId: string | null;
   kind: InfrastructureType;
@@ -9,7 +9,7 @@ export interface NavItem {
     ram?: number;
     ip?: string;
   };
-}
+};
 
 // --- Types ---
 type InfrastructureType = "cloud" | "region" | "zone" | "cluster" | "pod";

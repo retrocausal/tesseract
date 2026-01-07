@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": ".",
+    "outDir": "../dist/common-types",
+    /* We don't need paths here, as it doesn't depend on apps */
+    "baseUrl": ".",
+    "paths": {
+      /* Map the alias to the sibling folder */
+      "@common-types/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts"]
+}

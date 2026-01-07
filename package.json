@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev:cloud": "vite serve apps/cloud-console --config apps/cloud-console/vite.config.ts",
+    "build:cloud": "vite build apps/cloud-console --config apps/cloud-console/vite.config.ts"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
-    "vite-tsconfig-paths": "^6.0.3"
+    "vite-tsconfig-paths": "^6.0.3",
+    "ws": "^8.19.0"
   }
 }

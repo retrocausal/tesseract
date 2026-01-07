@@ -6,8 +6,12 @@
 
 html {
   font-size: medium;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-family: "Source Code Pro", "Courier New", Courier, monospace;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-display: swap;
+  font-style: normal;
+  color: var(--color-primary);
 }
 
 body {
@@ -31,18 +35,73 @@ main {
   flex-wrap: wrap;
   --cols: 24;
   flex: 1;
+  overflow: hidden;
 }
 main > section {
   --span: 24;
   --basis: calc((var(--span) / var(--cols)) * 100%);
   flex-shrink: 0;
   flex-basis: var(--basis);
-  overflow: hidden auto;
+  max-height: 100%;
+  overflow: hidden scroll;
+}
+
+main > .sidebar {
+  padding: 1rem;
+}
+
+.sidebar .nav-list {
+  list-style-type: none;
+  padding: 0 0.5rem;
+  width: 100%;
+  font-size: var(--font-size-medium);
+}
+.sidebar .nav-list .nav-item {
+  width: 100%;
+  padding: 1rem 0 0 0.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  color: var(--color-primary);
+}
+
+.sidebar .nav-list .nav-item > span {
+  display: inline-block;
+  flex: 1;
+  padding: 0 0 0 0.5rem;
+}
+
+.sidebar .nav-list .nav-item > span:hover {
+  color: var(--color-highlight);
+}
+
+.sidebar .nav-list .nav-parent::before {
+  content: "\25B6";
+  font-size: 0.9em;
+}
+
+.sidebar .nav-list .nav-parent-open::before {
+  content: "\25BC";
+  font-size: 0.9em;
+}
+
+.nav-list .status-active > span {
+  color: var(--status-active);
+}
+.nav-list .status-degraded > span {
+  color: var(--status-degraded);
+}
+.nav-list .status-offline > span {
+  color: var(--status-offline);
+}
+.nav-list .status-booting > span {
+  color: var(--status-booting);
 }
 
 @media screen and (min-width: 1024px) {
   main > .sidebar {
-    --span: 4;
+    --span: 6;
   }
   main > .alert-panel {
     --span: 6;
