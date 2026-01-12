@@ -16,7 +16,6 @@ class Emitter<T extends Record<string, any>> extends PubSubProvider<T> {
             `Error in listener for event '${String(name)}':`,
             error
           );
-          // Continue to next listener
         }
       });
     }
@@ -27,15 +26,11 @@ class Emitter<T extends Record<string, any>> extends PubSubProvider<T> {
     callback: Listener<T[K]>
   ): Subscription {
     if (name && callback && typeof callback === "function") {
-      const subscribers = this.subscriptions?.has(name)
-        ? this.subscriptions.get(name)
-        : null;
-
-      if (!subscribers) {
+      if (!this.subscriptions?.has(name)) {
         this.subscriptions.set(name, new Array());
       }
-      let listener = callback;
-      this.subscriptions.get(name)?.push(listener as Listener<T[keyof T]>);
+      const subscribers = this.subscriptions.get(name);
+      subscribers?.push(callback as Listener<T[keyof T]>);
 
       const unsubscribe = () => {
         if (this.subscriptions.has(name)) {
@@ -43,7 +38,7 @@ class Emitter<T extends Record<string, any>> extends PubSubProvider<T> {
           if (subscribers?.length) {
             this.subscriptions.set(
               name,
-              subscribers.filter((fn) => fn !== listener)
+              subscribers.filter((fn) => fn !== callback)
             );
           }
         }
@@ -66,11 +61,11 @@ class Emitter<T extends Record<string, any>> extends PubSubProvider<T> {
     name: K,
     callback: Listener<T[K]>
   ): Subscription {
-    const enrollment = this.enroll(name, (payload: T[K]) => {
+    const oneTmeSubscription = this.enroll(name, (payload: T[K]) => {
       callback(payload);
-      enrollment.unsubscribe();
+      oneTmeSubscription.unsubscribe();
     });
-    return enrollment;
+    return oneTmeSubscription;
   }
 }
 

@@ -16,5 +16,5 @@ export default abstract class N_Ary_Template<T> implements N_Ary<T> {
 }
 
 export function StaticImplements<I>() {
-  return (constructor: I) => {};
+  return (_constructor: I) => {};
 }

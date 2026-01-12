@@ -52,8 +52,8 @@ class N_Ary_Tree<T> extends N_Ary_Template<T> {
         if (this.nodes.has(parentId)) {
           const parent = this.nodes.get(parentId);
           if (parent) {
-            insertable.parentId = parent?.id;
-            parent?.children?.push(insertable);
+            insertable.parentId = parent.id;
+            parent.children?.push(insertable);
             inserted = insertable;
           }
         }

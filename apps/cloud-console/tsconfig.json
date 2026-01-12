@@ -25,15 +25,7 @@
     },
     "types": ["vite/client", "node"]
   },
-  "include": [
-    "src", 
-    "types", 
-    "mocks",
-    "vite.config.ts"
-  ],
+  "include": ["src", "types", "mocks", "vite.config.ts"],
   /* 2. MISSING LINK: Explicitly depend on the structure project */
-  "references": [
-    { "path": "../../structures" },
-    { "path": "../../types" }
-  ]
+  "references": [{ "path": "../../structures" }, { "path": "../../types" }]
 }
