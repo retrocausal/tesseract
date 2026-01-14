@@ -1,3 +1,5 @@
+/* base.css */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -50,139 +52,9 @@ main > aside {
   overflow: hidden scroll;
 }
 
-main > .sidebar {
-  padding: 1rem;
-  background-color: var(--color-bg-sidebar);
-}
+/* --- RESPONSIVE LAYOUT --- */
+/* Keeps the grid logic centralized */
 
-.sidebar .nav-list {
-  list-style-type: none;
-  padding: 0 0.5rem;
-  width: 100%;
-  font-size: var(--font-size-medium);
-}
-.sidebar .nav-list .nav-item {
-  width: 100%;
-  padding: 1rem 0 0 0.5rem;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  color: var(--color-text-primary);
-}
-
-.sidebar .nav-list .nav-item > span {
-  display: inline-block;
-  flex: 1;
-  padding: 0 0 0 0.5rem;
-}
-
-.sidebar .nav-list .nav-item > span:hover {
-  color: var(--color-text-highlight);
-}
-
-.sidebar .nav-list .nav-parent::before {
-  content: "\25B6";
-  font-size: 0.9em;
-  color: var(--color-text-secondary);
-}
-
-.sidebar .nav-list .nav-parent-open::before {
-  content: "\25BC";
-  font-size: 0.9em;
-  color: var(--color-text-secondary);
-}
-
-.nav-list .status-active > span {
-  color: var(--color-status-active);
-}
-.nav-list .status-degraded > span {
-  color: var(--color-status-degraded);
-}
-.nav-list .status-offline > span {
-  color: var(--color-status-offline);
-}
-.nav-list .status-booting > span {
-  color: var(--color-status-booting);
-}
-
-/* --- ALERT PANEL --- */
-
-.alert-panel .alert-stream .list {
-  list-style-type: none;
-  width: 100%;
-  background-color: var(--color-bg-panel);
-  font-size: var(--font-size-small);
-  box-shadow: inset var(--shadow-elevation-lg);
-}
-
-.alert-panel .alert-stream .list .item {
-  padding: 1rem;
-  padding-left: calc(10% + 0.25rem);
-  padding-right: calc(10% + 0.25rem);
-  /* 2. Make the severity indicator a solid inset shadow 
-     (Standard borders get cut by clip-path) */
-  box-shadow: inset 4px 0 0 0 var(--color-item-border-transparent);
-  background-color: var(--color-bg-panel);
-  transition: background-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  letter-spacing: 0.095rem;
-  --cols: 12;
-  /* Defining the points of the shape (Top-Left to Bottom-Left) */
-  /* We begin from the top left corner each couplet / tuple is a rep of x,y distance traveled*/
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    90% 50%,
-    100% 100%,
-    0% 100%,
-    10% 50%,
-    0% 0%
-  );
-}
-
-.alert-panel .alert-stream .list .item h4,
-.alert-panel .alert-stream .list .item span {
-  display: inline-block;
-  flex-basis: calc((var(--span) / var(--cols)) * 100%);
-}
-.alert-panel .alert-stream .list .item h4 {
-  --span: 7;
-  font-size: 0.9em;
-  text-transform: capitalize;
-}
-.alert-panel .alert-stream .list .item span {
-  --span: 2;
-  font-size: 0.8em;
-  color: var(--color-text-primary);
-  font-family: Georgia, "Times New Roman", Times, serif;
-}
-
-.alert-panel .alert-stream .list .item:hover {
-  background-color: var(--color-item-bg-hover);
-}
-
-.alert-panel .alert-stream .list .item.selected {
-  background-color: var(--color-item-bg-selected);
-  border-left-color: var(--color-text-highlight);
-}
-
-.alert-panel .alert-stream .list .item.alert-critical {
-  box-shadow: inset 2px 2px 8px 0 var(--color-status-offline);
-  color: var(--color-status-offline);
-}
-.alert-panel .alert-stream .list .item.alert-warning {
-  box-shadow: inset 2px 2px 8px 0 var(--color-status-degraded);
-  color: var(--color-status-degraded);
-}
-.alert-panel .alert-stream .list .item.alert-info {
-  box-shadow: inset 2px 2px 8px 0 var(--color-status-booting);
-  color: var(--color-status-booting);
-}
 @media screen and (min-width: 1024px) {
   main > .sidebar {
     --span: 6;
@@ -194,6 +66,7 @@ main > .sidebar {
   main > .alert-panel > section {
     overflow: hidden auto;
     max-height: 50%;
+    height: 50%;
   }
   main > .console-panel {
     flex: 1 1 auto;

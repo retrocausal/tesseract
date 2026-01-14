@@ -28,7 +28,7 @@ function buildFrame(struct: GenericHeap<Alert>, currentState: Alert[]): void {
     while (diff > 0) {
       diff--;
       const next = struct.pop();
-      if (next) state.unshift(next);
+      if (next) state.push(next);
       else break;
     }
   } else {
@@ -37,8 +37,8 @@ function buildFrame(struct: GenericHeap<Alert>, currentState: Alert[]): void {
       index--;
       const next = struct.pop();
       if (next) {
-        state.pop();
-        state.unshift(next);
+        state.shift();
+        state.push(next);
       } else break;
     }
   }
@@ -61,19 +61,19 @@ export function onload() {
       });
     });
   });
-  let lastFramePainted = 0;
+  let lastFramePainted = -1 * TIMEINTERVAL;
   let streamBeingWatched = false;
   let focusedAlert: string | null = null;
-  const container = document.querySelector(
-    "main #alerts .alert-stream"
-  ) as HTMLElement;
-  container.onmouseenter = function (e) {
+  const alertList = document.querySelector(
+    "main #alerts .alert-stream .list"
+  ) as HTMLUListElement;
+  alertList.onmouseenter = function (e) {
     streamBeingWatched = true;
   };
-  container.onmouseleave = function (e) {
+  alertList.onmouseleave = function (e) {
     streamBeingWatched = false;
   };
-  container.onclick = function (e) {
+  alertList.onclick = function (e) {
     const target = e?.target;
     if (target instanceof HTMLElement) {
       const alertNode = target.closest(".item");
@@ -90,8 +90,6 @@ export function onload() {
       render(UIStream, alertList, focusedAlert);
     }
   };
-  const alertList = document.createElement("ul");
-  alertList.className = "list";
   const refresh = () => {
     const now = performance.now();
     const interval = now - lastFramePainted;
@@ -108,6 +106,5 @@ export function onload() {
     }
     requestAnimationFrame(refresh);
   };
-  container?.append(alertList);
   requestAnimationFrame(refresh);
 }

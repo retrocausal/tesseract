@@ -1,11 +1,7 @@
-import { default as Tree } from "@common-struct/n-ary.struct";
-import type {
-  N_ary_Node,
-  default as N_Ary,
-} from "@common-types/interfaces/n-ary.interface";
+import type { N_ary_Node } from "@common-types/interfaces/n-ary.interface";
 import type { NavItem } from "@cloud/types/sidebar";
 
-export const EVENTID = "OnStatusChange";
+import "@cloud/modules/sidebar/styles/index.css";
 
 const STATUS_CLASSES = [
   "status-active",
@@ -14,29 +10,26 @@ const STATUS_CLASSES = [
   "status-booting",
 ];
 
-const setStatusClass = (el: HTMLElement, status: string | undefined) => {
+export const setStatusClass = (el: HTMLElement, status: string | undefined) => {
   if (!status) return;
   el.classList.remove(...STATUS_CLASSES); // Clean old state
   el.classList.add(`status-${status}`);
 };
 
-function render(
+export function render(
   node: N_ary_Node<NavItem>,
-  nodeMap: Map<string, N_ary_Node<NavItem>>
+  state: Set<string>,
+  innerHTML: boolean = false
 ): HTMLElement {
-  const list = document.createElement("ul");
-  list.className = "nav-list";
-  const state = new Set<string>();
-
   const build = (node: N_ary_Node<NavItem>) => {
     const { children, value, id } = node;
     const { name, status } = value;
-
     const li = document.createElement("li");
     li.className = "nav-item";
     if (status) setStatusClass(li, status);
-    li.innerHTML = `<span>${name}</span>`;
+    li.innerHTML = `<span><a>${name}</a></span>`;
     li.setAttribute("id", id);
+    li.setAttribute("tabIndex", "0");
     if (children.length) {
       li.classList.add("nav-parent");
       if (state.has(id)) {
@@ -52,52 +45,45 @@ function render(
     }
     return li;
   };
+  const fragment = build(node);
+  if (!innerHTML) {
+    const list = document.createElement("ul");
+    list.className = "nav-list";
+    list.append(fragment);
+    return list;
+  }
 
-  const toggle = (id: string) => {
-    if (state.has(id)) {
-      state.delete(id);
-    } else {
-      state.add(id);
-    }
-  };
-
-  list.onclick = function (e) {
-    e.stopPropagation();
-    const target = e.target;
-    if (target instanceof HTMLElement) {
-      const item = target.closest(".nav-item");
-      const id = item?.getAttribute("id");
-      if (id && item) {
-        toggle(id);
-        const node = nodeMap?.get(id);
-        if (node) {
-          const parent = item?.parentElement || item?.closest(".nav-list");
-          const newNode = build(node);
-          parent?.replaceChild(newNode, item);
-        }
-      }
-    }
-  };
-  list.addEventListener(EVENTID, (e) => {
-    const event = e as CustomEvent;
-    const { detail } = event;
-    const { status } = detail;
-    const target = event.target;
-    if (target instanceof HTMLElement) {
-      if (status) setStatusClass(target, status);
-    }
-  });
-
-  list.append(build(node));
-  return list;
+  return fragment;
 }
 
-export function present(data: NavItem[]): N_Ary<NavItem> {
-  const tree = Tree.from(data);
-  const container = document.querySelector("main #nav");
-  const rootNode = tree?.root;
-  if (rootNode) {
-    container?.append(render(rootNode, tree.nodes));
+export function getTargets(e: unknown): (Element | null | undefined)[] {
+  let node, parent;
+  if (e instanceof Event) {
+    const target = e.target;
+    if (target instanceof HTMLElement) {
+      node = target.closest(".nav-item");
+      parent = node?.parentElement || node?.closest(".nav-list");
+    }
   }
-  return tree;
+  return [node, parent];
+}
+
+export function rebuild(
+  node: N_ary_Node<NavItem>,
+  state: Set<string>,
+  target: Element,
+  parent: Element
+): HTMLElement {
+  const newNode = render(node, state, true);
+  parent?.replaceChild(newNode, target);
+  return newNode;
+}
+
+export function setSelected(id: string | null | undefined) {
+  if (id) {
+    const previous = document?.querySelector(".nav-item.selected");
+    previous?.classList.remove("selected");
+    const node = document?.getElementById(id);
+    node?.classList.add("selected");
+  }
 }

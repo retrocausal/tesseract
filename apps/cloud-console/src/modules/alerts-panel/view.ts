@@ -1,5 +1,5 @@
 import type { Alert } from "@cloud/types/alerts.types";
-
+import "@cloud/styles/modules/alert-panel.css";
 export default function render(
   alerts: Alert[],
   root: HTMLUListElement,
@@ -31,5 +31,5 @@ export default function render(
       fragment.append(li);
     }
   }
-  root.append(fragment);
+  root?.append(fragment);
 }

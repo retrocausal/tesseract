@@ -21,6 +21,18 @@ class NaryNode<T> implements N_ary_Node<T> {
 }
 @StaticImplements<N_Ary_Static>()
 class N_Ary_Tree<T> extends N_Ary_Template<T> {
+  public lineage(target: string): N_ary_Node<T>[] {
+    const ancestors = new Array();
+    let node = this.nodes?.get(target);
+    while (node) {
+      ancestors.push(node);
+      const { parentId } = node;
+      if (parentId) node = this.nodes?.get(parentId);
+      else break;
+    }
+    return ancestors;
+  }
+
   find(target: string | N_ary_Node<T>) {
     let id = "";
     if (target instanceof NaryNode) {

@@ -1,0 +1,68 @@
+/* sidebar.css */
+
+main > .sidebar {
+  padding: 1rem;
+  background-color: var(--color-bg-sidebar);
+}
+
+.sidebar .nav-list {
+  list-style-type: none;
+  padding: 0 0.5rem;
+  width: 100%;
+  font-size: var(--font-size-medium);
+}
+.sidebar .nav-list .nav-item {
+  width: 100%;
+  padding: 1rem 0 0 0.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  color: var(--color-text-primary);
+}
+
+.sidebar .nav-list .nav-item > span {
+  display: inline-block;
+  flex: 1;
+  padding: 0 0 0 0.5rem;
+}
+
+.sidebar .nav-list .nav-item > span a {
+  text-decoration: none;
+  outline: none;
+}
+
+.sidebar .nav-list .nav-item > span:hover {
+  color: var(--color-text-highlight);
+}
+
+.sidebar .nav-list .nav-item.selected > span {
+  color: var(--color-text-highlight);
+  font-weight: bold;
+  border-left: 2px solid var(--color-text-highlight);
+}
+
+.sidebar .nav-list .nav-parent::before {
+  content: "\25B6";
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.sidebar .nav-list .nav-parent-open::before {
+  content: "\25BC";
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.nav-list .status-active > span {
+  color: var(--color-status-active);
+}
+.nav-list .status-degraded > span {
+  color: var(--color-status-degraded);
+}
+.nav-list .status-offline > span {
+  color: var(--color-status-offline);
+}
+.nav-list .status-booting > span {
+  color: var(--color-status-booting);
+}

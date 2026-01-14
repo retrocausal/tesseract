@@ -1,26 +1,4 @@
-// src/data/mock-db.ts
-
-// --- Types ---
-export type InfrastructureType =
-  | "cloud"
-  | "region"
-  | "zone"
-  | "cluster"
-  | "pod";
-export type Status = "active" | "degraded" | "offline" | "booting";
-
-export interface FlatNode {
-  id: string;
-  parentId: string | null;
-  kind: InfrastructureType;
-  name: string;
-  status: Status;
-  meta: {
-    cpu?: number;
-    ram?: number;
-    ip?: string;
-  };
-}
+import type { NavItem as FlatNode } from "@cloud/types/sidebar";
 
 // --- Configuration ---
 // Scale: 5 Regions * 5 Zones * 25 Clusters * 25 Pods = ~16,000 Nodes

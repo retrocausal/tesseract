@@ -26,4 +26,6 @@ export default interface N_Ary<T> {
   ): N_ary_Node<T> | null;
 
   remove(target: string | N_ary_Node<T>): boolean;
+
+  lineage(target: string): N_ary_Node<T>[];
 }

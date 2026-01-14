@@ -1,16 +1,25 @@
-import { fetchInfrastructureNav } from "@cloud/mocks/nav";
 import mockRandomUpdates from "@cloud/mocks/socket";
-import N_Ary from "@common-types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud/types/sidebar";
+import type { default as N_Ary } from "@common-types/interfaces/n-ary.interface";
+import { default as Tree } from "@common-struct/n-ary.struct";
+import type {
+  NavItem,
+  EventBinder,
+  BootstrapConfig,
+} from "@cloud/types/sidebar";
 import { default as EventPubSubProvider } from "@cloud/utils/emitter";
-import { present, EVENTID } from "@cloud/modules/sidebar/view";
+import { render, setSelected } from "@cloud/modules/sidebar/view";
+import { propagateState as PropagateNAVState } from "@cloud/modules/sidebar/utils/nav-utils";
+import {
+  onclick,
+  onStatusChange,
+} from "@cloud/modules/sidebar/utils/listeners";
 
-const STATUS_SEV_INDICES = ["active", "booting", "degraded", "offline"];
+export const onStatusReception = "OnStatusChange";
 
 function dispatchStatusUpdate(id: string, status: string) {
   const element = document.getElementById(id);
   if (element) {
-    const event = new CustomEvent(EVENTID, {
+    const event = new CustomEvent(onStatusReception, {
       detail: { id, status },
       bubbles: true,
     });
@@ -18,65 +27,81 @@ function dispatchStatusUpdate(id: string, status: string) {
   }
 }
 
-function subscribe(tree: N_Ary<NavItem>) {
-  const { nodes } = tree;
-  EventPubSubProvider.subscribe("status:update", (payload) => {
-    const { id, status } = payload;
-    if (nodes.has(id)) {
-      const node = nodes.get(id);
-      if (node) {
-        let current: string | null | undefined = node.parentId;
-        const receivedState = status as NavItem["status"];
-        node.value.status = receivedState;
-        dispatchStatusUpdate(id, receivedState);
-        while (current) {
-          const parent = nodes.get(current);
-          if (parent) {
-            const parentState =
-              parent.value?.status || ("active" as NavItem["status"]);
-            let newParentState;
-            if (
-              STATUS_SEV_INDICES.indexOf(receivedState) >
-              STATUS_SEV_INDICES.indexOf(parentState)
-            ) {
-              newParentState = receivedState;
-            } else {
-              const { children } = parent;
-              let maxSevIndex = 0;
-              for (const child of children) {
-                if (maxSevIndex === STATUS_SEV_INDICES.length - 1) break;
-                if (
-                  child.value.status &&
-                  STATUS_SEV_INDICES.indexOf(child.value.status) > maxSevIndex
-                ) {
-                  maxSevIndex = STATUS_SEV_INDICES.indexOf(child.value.status);
-                }
-              }
-              if (parent.value.status !== STATUS_SEV_INDICES[maxSevIndex]) {
-                newParentState = STATUS_SEV_INDICES[maxSevIndex];
-              }
-            }
-            if (parent && newParentState && newParentState !== parentState) {
-              parent.value.status = newParentState as NavItem["status"];
-              dispatchStatusUpdate(current, newParentState);
-            }
-            current = parent?.parentId;
-          } else {
-            current = null;
-            break;
-          }
-        }
+function subscribe(tree: N_Ary<NavItem> | undefined) {
+  if (tree) {
+    const { nodes } = tree;
+    EventPubSubProvider.subscribe("status:update", (payload) => {
+      const propagations = PropagateNAVState(payload, nodes);
+      for (const [id, status] of propagations) {
+        dispatchStatusUpdate(id, status);
       }
-    }
-  });
+    });
+  }
 }
 
-export function onload() {
-  fetchInfrastructureNav()
-    .then(present)
-    .then(mockRandomUpdates)
-    .then(subscribe)
-    .catch((e) => {
-      console.warn(e);
-    });
+function hydrateStateFromURL(
+  state: Set<string>,
+  tree: N_Ary<NavItem>,
+  URI: URL
+): string | undefined {
+  let resourceID;
+  const pathFragments = URI?.pathname?.split("/resource/").filter((p) => !!p);
+  if (pathFragments.length === 2) {
+    resourceID = pathFragments.pop();
+    if (resourceID) {
+      const lineage = tree?.lineage(resourceID);
+      for (let i = lineage.length - 1; i > -1; i--) {
+        const resource = lineage[i];
+        state?.add(resource.id);
+      }
+    }
+  }
+  return resourceID;
+}
+
+function present(config: BootstrapConfig): EventBinder {
+  const { data, container } = config;
+  let state,
+    list = null;
+  const tree = Tree.from(data);
+  if (container) {
+    const rootNode = tree?.root;
+    if (rootNode) {
+      state = new Set<string>();
+      const URI = new URL(window?.location?.href);
+      const pathName = URI?.pathname;
+      let resourceID;
+      if (pathName && pathName.includes("/resource/")) {
+        resourceID = hydrateStateFromURL(state, tree, URI);
+      }
+      list = render(rootNode, state);
+      container?.append(list);
+      if (resourceID) {
+        setSelected(resourceID);
+      }
+    }
+  }
+  return { state, tree, parent: list };
+}
+
+function attachEventListeners(arg: EventBinder): N_Ary<NavItem> | undefined {
+  const { tree, parent, state } = arg;
+  if (tree && state) {
+    parent?.addEventListener("click", (e) => onclick(e, tree.nodes, state));
+    parent?.addEventListener(onStatusReception, onStatusChange);
+    return tree;
+  }
+}
+
+export function onload(navData: BootstrapConfig) {
+  if (navData) {
+    Promise.resolve(navData)
+      .then(present)
+      .then(attachEventListeners)
+      .then(mockRandomUpdates)
+      .then(subscribe)
+      .catch((e) => {
+        console.warn(e);
+      });
+  }
 }
