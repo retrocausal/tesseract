@@ -13,8 +13,7 @@
     "baseUrl": ".",
     "paths": {
       /* 1. MISSING LINK: Map the shared library alias */
-      "@common-struct/*": ["../../structures/*"],
-      "@common-types/*": ["../../types/*"],
+      "@platform/*": ["../../platform/*"],
 
       /* Local Mappings */
       "@cloud/*": ["src/*"],
@@ -27,5 +26,5 @@
   },
   "include": ["src", "types", "mocks", "vite.config.ts"],
   /* 2. MISSING LINK: Explicitly depend on the structure project */
-  "references": [{ "path": "../../structures" }, { "path": "../../types" }]
+  "references": [{ "path": "../../platform" }]
 }

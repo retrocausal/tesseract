@@ -1,4 +1,4 @@
-import type { N_ary_Node } from "@common-types/interfaces/n-ary.interface";
+import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
 import type { NavItem } from "@cloud/types/sidebar";
 import {
   toggleNavState as toggle,

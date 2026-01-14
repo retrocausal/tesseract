@@ -1,11 +1,11 @@
 import N_Ary_Template, {
   StaticImplements,
-} from "@common-types/abstracts/n-ary.abstract";
+} from "@platform-types/abstracts/n-ary.abstract";
 import type {
   N_ary_Node,
   N_Ary_Static,
-} from "@common-types/interfaces/n-ary.interface";
-import N_Ary from "@common-types/interfaces/n-ary.interface";
+} from "@platform-types/interfaces/n-ary.interface";
+import N_Ary from "@platform-types/interfaces/n-ary.interface";
 
 class NaryNode<T> implements N_ary_Node<T> {
   id: string;

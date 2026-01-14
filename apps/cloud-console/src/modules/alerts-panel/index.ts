@@ -1,7 +1,7 @@
 import { default as EventPubSubProvider } from "@cloud/utils/emitter";
-import { default as Heap } from "@common-struct/heap.struct";
+import { default as Heap } from "@platform/structures/heap.struct";
 import type { Alert } from "@cloud/types/alerts.types";
-import type GenericHeap from "@common-types/interfaces/heap";
+import type GenericHeap from "@platform/types/interfaces/heap";
 import render from "@cloud/modules/alerts-panel/view";
 
 const LIMIT = 50;

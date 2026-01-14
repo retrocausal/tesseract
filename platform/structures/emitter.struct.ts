@@ -1,23 +1,25 @@
-import PubSubProvider from "@common-types/abstracts/emitter.abstract";
+import PubSubProvider from "@platform-types/abstracts/emitter.abstract";
 import type {
   Listener,
   Subscription,
-} from "@common-types/interfaces/emitter.interface";
+} from "@platform-types/interfaces/emitter.interface";
 
 class Emitter<T extends Record<string, any>> extends PubSubProvider<T> {
   public emit<K extends keyof T>(name: K, payload: T[K]) {
-    const subscribers = this.subscriptions?.get(name);
-    if (subscribers && subscribers.length) {
-      subscribers.forEach((listener) => {
-        try {
-          listener(payload);
-        } catch (error) {
-          console.error(
-            `Error in listener for event '${String(name)}':`,
-            error
-          );
-        }
-      });
+    if (this.subscriptions?.has(name)) {
+      const subscribers = this.subscriptions.get(name);
+      if (subscribers && subscribers.length) {
+        subscribers.forEach((listener) => {
+          try {
+            listener(payload);
+          } catch (error) {
+            console.error(
+              `Error in listener for event '${String(name)}':`,
+              error
+            );
+          }
+        });
+      }
     }
   }
 

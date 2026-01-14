@@ -1,6 +1,6 @@
 {
   "files": [],
-  "references": [{ "path": "./apps/cloud-console" },{"path":"./types"},{"path":"./structures"}],
+  "references": [{ "path": "./apps/cloud-console" }, { "path": "./platform" }],
   // Include the config files themselves for linting
   "include": [""]
 }

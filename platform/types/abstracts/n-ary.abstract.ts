@@ -1,5 +1,5 @@
-import type N_Ary from "@common-types/interfaces/n-ary.interface";
-import type { N_ary_Node } from "@common-types/interfaces/n-ary.interface";
+import type N_Ary from "@platform-types/interfaces/n-ary.interface";
+import type { N_ary_Node } from "@platform-types/interfaces/n-ary.interface";
 
 export default abstract class N_Ary_Template<T> implements N_Ary<T> {
   root: N_ary_Node<T> | null = null;

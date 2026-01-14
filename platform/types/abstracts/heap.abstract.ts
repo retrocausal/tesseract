@@ -1,5 +1,5 @@
-import type GenericHeap from "@common-types/interfaces/heap";
-import type { ComparatorFn } from "@common-types/interfaces/heap";
+import type GenericHeap from "@platform-types/interfaces/heap";
+import type { ComparatorFn } from "@platform-types/interfaces/heap";
 
 abstract class Heap<T> implements GenericHeap<T> {
   protected collection: T[] = new Array();

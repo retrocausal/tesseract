@@ -1,4 +1,4 @@
-import Heap from "@common-types/abstracts/heap.abstract";
+import Heap from "@platform-types/abstracts/heap.abstract";
 
 /**
  * [1,2,3,4,5,6,7,8,9]

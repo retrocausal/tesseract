@@ -1,6 +1,6 @@
 import type { StatusDispatch } from "@cloud/types/emitter.types";
 import type { NavItem } from "@cloud/types/sidebar";
-import type { N_ary_Node } from "@common-types/interfaces/n-ary.interface";
+import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
 
 const STATUS_SEV_INDICES = ["active", "booting", "degraded", "offline"];
 

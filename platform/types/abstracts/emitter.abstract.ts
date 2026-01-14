@@ -1,9 +1,9 @@
-import type CustomEventEmitter from "@common-types/interfaces/emitter.interface";
+import type CustomEventEmitter from "@platform-types/interfaces/emitter.interface";
 import type {
   Listeners,
   Listener,
   Subscription,
-} from "@common-types/interfaces/emitter.interface";
+} from "@platform-types/interfaces/emitter.interface";
 
 abstract class PubSubProvider<T extends Record<string, any>>
   implements CustomEventEmitter<T>

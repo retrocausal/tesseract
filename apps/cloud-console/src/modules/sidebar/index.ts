@@ -1,6 +1,6 @@
 import mockRandomUpdates from "@cloud/mocks/socket";
-import type { default as N_Ary } from "@common-types/interfaces/n-ary.interface";
-import { default as Tree } from "@common-struct/n-ary.struct";
+import type { default as N_Ary } from "@platform/types/interfaces/n-ary.interface";
+import { default as Tree } from "@platform/structures/n-ary.struct";
 import type {
   NavItem,
   EventBinder,

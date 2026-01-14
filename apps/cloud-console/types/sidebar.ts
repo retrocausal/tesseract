@@ -1,4 +1,4 @@
-import type { default as N_ary } from "@common-types/interfaces/n-ary.interface";
+import type { default as N_ary } from "@platform/types/interfaces/n-ary.interface";
 
 export type NavItem = {
   id: string;

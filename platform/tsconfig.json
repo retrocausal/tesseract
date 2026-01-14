@@ -7,13 +7,12 @@
     "declaration": true,
     "declarationMap": true,
     "rootDir": ".",
-    "outDir": "../dist/common-types",
+    "outDir": "../dist/platform",
     /* We don't need paths here, as it doesn't depend on apps */
     "baseUrl": ".",
     "paths": {
-      /* Map the alias to the sibling folder */
-      "@common-types/*": ["./*"]
+      "@platform-types/*": ["types/*"]
     }
   },
-  "include": ["**/*.ts"]
+  "include": ["types", "structures"]
 }
