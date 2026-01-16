@@ -11,7 +11,8 @@
     /* We don't need paths here, as it doesn't depend on apps */
     "baseUrl": ".",
     "paths": {
-      "@platform-types/*": ["types/*"]
+      "@platform-types/*": ["types/*"],
+      "@platform-structs/*": ["structures/*"]
     }
   },
   "include": ["types", "structures"]
