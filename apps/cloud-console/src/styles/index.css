@@ -31,6 +31,7 @@ header {
   display: grid;
   grid-template-columns: 5vw 70vw 25vw;
   box-shadow: 0 1px 0 0 var(--color-header-border);
+  position: relative;
 }
 
 main {
@@ -40,6 +41,7 @@ main {
   --cols: 24;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 main > article,
@@ -50,6 +52,7 @@ main > aside {
   flex-basis: var(--basis);
   max-height: 100%;
   overflow: hidden scroll;
+  position: relative;
 }
 
 /* --- RESPONSIVE LAYOUT --- */
@@ -64,7 +67,8 @@ main > aside {
     overflow: hidden;
   }
   main > .alert-panel > section {
-    overflow: hidden auto;
+    overflow: hidden;
+    overflow-y: scroll;
     max-height: 50%;
     height: 50%;
   }

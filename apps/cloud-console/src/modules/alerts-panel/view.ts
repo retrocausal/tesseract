@@ -1,5 +1,5 @@
 import type { Alert } from "@cloud/types/alerts.types";
-import "@cloud/styles/modules/alert-panel.css";
+import "@cloud/modules/alerts-panel/styles/index.css";
 export default function render(
   alerts: Alert[],
   root: HTMLUListElement,

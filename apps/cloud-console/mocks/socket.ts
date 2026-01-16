@@ -33,6 +33,8 @@ export default function websocketProvider(
     socket.onmessage = (event) => {
       // 2. Unsafe Cast: We assert we know the shape of the incoming JSON
       const data = JSON.parse(event?.data) as SocketMessage;
+      console.log(data);
+
       const { kind, status, alerts, logs, id, priority, severity } = data;
       // 3. Handle the correlation strictly
       // We cannot just pass 'data' blindly because the payloads differ.

@@ -3,6 +3,7 @@
 .alert-panel .alert-stream .list {
   list-style-type: none;
   width: 100%;
+  min-height: 100%;
   background-color: var(--color-bg-panel);
   font-size: var(--font-size-small);
   box-shadow: inset var(--shadow-elevation-lg), var(--shadow-elevation-md);
