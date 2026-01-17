@@ -10,6 +10,11 @@ abstract class PlatformRouter<X extends Record<string, any> = {}>
 {
   protected emitter: Emitter<RouterEvents & Omit<X, keyof RouterEvents>> =
     new Emitter<RouterEvents & Omit<X, keyof RouterEvents>>();
+
+  public abstract onRouteChange(
+    payload: RouterEvents[keyof RouterEvents]
+  ): void;
+
   constructor() {
     window.addEventListener("popstate", this.onPOP.bind(this));
   }
@@ -49,6 +54,7 @@ abstract class PlatformRouter<X extends Record<string, any> = {}>
     name: K,
     payload: RouterEvents[K]
   ) {
+    this.onRouteChange?.(payload);
     (this.emitter as any).emit(name, payload);
   }
 

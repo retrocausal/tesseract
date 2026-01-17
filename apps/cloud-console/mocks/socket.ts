@@ -1,7 +1,7 @@
 import type N_Ary from "@platform/types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud/types/sidebar";
-import { default as EventPubSubProvider } from "@cloud/utils/emitter";
-import type { Dispatch } from "@cloud/types/emitter.types";
+import type { NavItem } from "@cloud-types/sidebar";
+import { default as EventPubSubProvider } from "@cloud-utils/emitter";
+import type { Dispatch } from "@cloud-types/emitter.types";
 
 // 1. Define what the Socket sends us (The Contract)
 type SocketMessage = {

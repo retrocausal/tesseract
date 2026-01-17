@@ -1,15 +1,15 @@
 import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud/types/sidebar";
+import type { NavItem } from "@cloud-types/sidebar";
 import {
   toggleNavState as toggle,
   mutateHistory,
-} from "@cloud/modules/sidebar/utils/nav-utils";
+} from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   getTargets,
   rebuild,
   setStatusClass,
   setSelected,
-} from "@cloud/modules/sidebar/view";
+} from "@cloud-modules/sidebar/view";
 
 export function onclick(
   e: Event,

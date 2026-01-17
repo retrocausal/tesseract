@@ -1,7 +1,7 @@
 import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud/types/sidebar";
+import type { NavItem } from "@cloud-types/sidebar";
 
-import "@cloud/modules/sidebar/styles/index.css";
+import "@cloud-modules/sidebar/styles/index.css";
 
 const STATUS_CLASSES = [
   "status-active",

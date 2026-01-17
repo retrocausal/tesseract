@@ -17,14 +17,15 @@
 
       /* Local Mappings */
       "@cloud/*": ["src/*"],
-      "@cloud/utils/*": ["src/utils/*"],
-      "@cloud/modules/*": ["src/modules/*"],
-      "@cloud/types/*": ["types/*"],
-      "@cloud/mocks/*": ["mocks/*"]
+      "@cloud-utils/*": ["src/utils/*"],
+      "@cloud-modules/*": ["src/modules/*"],
+      "@cloud-types/*": ["types/*"],
+      "@cloud-mocks/*": ["mocks/*"],
+      "@cloud-router/*": ["router/*"]
     },
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "types", "mocks", "vite.config.ts"],
-  /* 2. MISSING LINK: Explicitly depend on the structure project */
+  "include": ["src", "types", "mocks", "router", "vite.config.ts"],
+  /* Explicitly depend on the platform project */
   "references": [{ "path": "../../platform" }]
 }

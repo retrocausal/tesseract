@@ -1,18 +1,18 @@
-import mockRandomUpdates from "@cloud/mocks/socket";
+import mockRandomUpdates from "@cloud-mocks/socket";
 import type { default as N_Ary } from "@platform/types/interfaces/n-ary.interface";
 import { default as Tree } from "@platform/structures/n-ary.struct";
 import type {
   NavItem,
   EventBinder,
   BootstrapConfig,
-} from "@cloud/types/sidebar";
-import { default as EventPubSubProvider } from "@cloud/utils/emitter";
-import { render, setSelected } from "@cloud/modules/sidebar/view";
-import { propagateState as PropagateNAVState } from "@cloud/modules/sidebar/utils/nav-utils";
+} from "@cloud-types/sidebar";
+import { default as EventPubSubProvider } from "@cloud-utils/emitter";
+import { render, setSelected } from "@cloud-modules/sidebar/view";
+import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   onclick,
   onStatusChange,
-} from "@cloud/modules/sidebar/utils/listeners";
+} from "@cloud-modules/sidebar/utils/listeners";
 
 export const onStatusReception = "OnStatusChange";
 

@@ -1,4 +1,4 @@
-import type { NavItem as FlatNode } from "@cloud/types/sidebar";
+import type { NavItem as FlatNode } from "@cloud-types/sidebar";
 
 // --- Configuration ---
 // Scale: 5 Regions * 5 Zones * 25 Clusters * 25 Pods = ~16,000 Nodes
