@@ -1,10 +1,10 @@
 import mockRandomUpdates from "@cloud-mocks/socket";
 import type { default as N_Ary } from "@platform/types/interfaces/n-ary.interface";
-import { default as Tree } from "@platform/structures/n-ary.struct";
 import type {
   NavItem,
-  EventBinder,
-  BootstrapConfig,
+  NavData,
+  Scaffolder,
+  Scaffolding,
 } from "@cloud-types/sidebar";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { render, setSelected } from "@cloud-modules/sidebar/view";
@@ -13,6 +13,8 @@ import {
   onclick,
   onStatusChange,
 } from "@cloud-modules/sidebar/utils/listeners";
+import type { RouteIdentifier } from "@cloud-constants/router.const";
+import { CLOUD_CONSOLE_ROUTE_KEYS } from "@cloud-constants/router.const";
 
 export const onStatusReception = "OnStatusChange";
 
@@ -27,81 +29,107 @@ function dispatchStatusUpdate(id: string, status: string) {
   }
 }
 
-function subscribe(tree: N_Ary<NavItem> | undefined) {
-  if (tree) {
-    const { nodes } = tree;
-    EventPubSubProvider.subscribe("status:update", (payload) => {
-      const propagations = PropagateNAVState(payload, nodes);
-      for (const [id, status] of propagations) {
-        dispatchStatusUpdate(id, status);
-      }
-    });
-  }
-}
-
-function hydrateStateFromURL(
-  state: Set<string>,
-  tree: N_Ary<NavItem>,
-  URI: URL
-): string | undefined {
-  let resourceID;
-  const pathFragments = URI?.pathname?.split("/resource/").filter((p) => !!p);
-  if (pathFragments.length === 2) {
-    resourceID = pathFragments.pop();
-    if (resourceID) {
-      const lineage = tree?.lineage(resourceID);
-      for (let i = lineage.length - 1; i > -1; i--) {
-        const resource = lineage[i];
-        state?.add(resource.id);
-      }
+function attachStateChangeListeners(tree: N_Ary<NavItem>) {
+  const { nodes } = tree;
+  EventPubSubProvider.subscribe("status:update", (payload) => {
+    const propagations = PropagateNAVState(payload, nodes);
+    for (const [id, status] of propagations) {
+      dispatchStatusUpdate(id, status);
     }
-  }
-  return resourceID;
+  });
 }
 
-function present(config: BootstrapConfig): EventBinder {
-  const { data, container } = config;
-  let state,
+async function initialiseConsole(arg: Scaffolding): Promise<NavData> {
+  const { tree, container } = arg;
+  let state: Set<string> | undefined,
     list = null;
-  const tree = Tree.from(data);
   if (container) {
     const rootNode = tree?.root;
+    state = new Set<string>();
     if (rootNode) {
-      state = new Set<string>();
+      list = render(rootNode, state);
+      container?.append(list);
+      list?.addEventListener("click", (e) => onclick(e, tree.nodes, state));
+      list?.addEventListener(onStatusReception, onStatusChange);
+    }
+  }
+  return { state, tree, root: list };
+}
+
+async function bootstrap(arg: Scaffolder) {
+  return import("@platform/structures/n-ary.struct")
+    .then((module) => module.default)
+    .then((NaryTree) => ({
+      tree: NaryTree?.from(arg?.data),
+      container: arg?.container,
+    }))
+    .then(initialiseConsole);
+}
+
+async function run(data: NavData) {
+  const { state, tree, root } = data;
+  if (state && tree && root) {
+    attachStateChangeListeners(tree);
+    mockRandomUpdates(tree);
+    function hydrateStateFromURL(resourceID: string) {
+      if (resourceID) {
+        const lineage = tree?.lineage(resourceID);
+        if (lineage) {
+          for (let i = lineage.length - 1; i > -1; i--) {
+            const resource = lineage[i];
+            state?.add(resource.id);
+          }
+        }
+        setSelected(resourceID);
+      }
+    }
+    return hydrateStateFromURL;
+  }
+}
+
+async function enrollURIChangeListener(
+  fn: ((resourceID: string) => void) | undefined,
+) {
+  if (fn) {
+    const module = await import("@cloud-router/index");
+    const AppRouter = module?.default;
+    const key: RouteIdentifier = CLOUD_CONSOLE_ROUTE_KEYS.RES_ID;
+    AppRouter?.registerURIChangeListeners(fn, key);
+  }
+}
+
+export function onload(navInitializer: Scaffolder) {
+  if (navInitializer) {
+    Promise.resolve(navInitializer)
+      .then(bootstrap)
+      .then(run)
+      .then(enrollURIChangeListener)
+      .catch((e) => {
+        console.warn(e);
+      });
+  }
+}
+
+/**
+ * 
+ * 
+      .then(attachEventListeners)
+.then(mockRandomUpdates)
+      .then(attachStateChangeListeners)
+
       const URI = new URL(window?.location?.href);
       const pathName = URI?.pathname;
       let resourceID;
       if (pathName && pathName.includes("/resource/")) {
         resourceID = hydrateStateFromURL(state, tree, URI);
       }
-      list = render(rootNode, state);
-      container?.append(list);
       if (resourceID) {
         setSelected(resourceID);
       }
-    }
-  }
-  return { state, tree, parent: list };
-}
+ */
 
-function attachEventListeners(arg: EventBinder): N_Ary<NavItem> | undefined {
-  const { tree, parent, state } = arg;
-  if (tree && state) {
-    parent?.addEventListener("click", (e) => onclick(e, tree.nodes, state));
-    parent?.addEventListener(onStatusReception, onStatusChange);
-    return tree;
-  }
-}
+/**
+       * 
+       * 
 
-export function onload(navData: BootstrapConfig) {
-  if (navData) {
-    Promise.resolve(navData)
-      .then(present)
-      .then(attachEventListeners)
-      .then(mockRandomUpdates)
-      .then(subscribe)
-      .catch((e) => {
-        console.warn(e);
-      });
-  }
-}
+       */

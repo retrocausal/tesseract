@@ -21,11 +21,12 @@
       "@cloud-modules/*": ["src/modules/*"],
       "@cloud-types/*": ["types/*"],
       "@cloud-mocks/*": ["mocks/*"],
-      "@cloud-router/*": ["router/*"]
+      "@cloud-router/*": ["router/*"],
+      "@cloud-constants/*": ["constants/*"]
     },
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "types", "mocks", "router", "vite.config.ts"],
+  "include": ["src", "types", "mocks", "router", "constants", "vite.config.ts"],
   /* Explicitly depend on the platform project */
   "references": [{ "path": "../../platform" }]
 }

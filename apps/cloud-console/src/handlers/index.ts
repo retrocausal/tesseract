@@ -3,10 +3,10 @@ import { onload as BootstrapAlerts } from "@cloud-modules/alerts-panel/index";
 import { fetchInfrastructureNav } from "@cloud-mocks/nav";
 import type {
   NavItem,
-  BootstrapConfig as SidebarBootstrapper,
+  Scaffolder as SidebarBootstrapper,
 } from "@cloud-types/sidebar";
 
-export function onload(_e: Event) {
+async function bootstrapApp() {
   //sidebar
   fetchInfrastructureNav()
     .then((data: NavItem[]) => {
@@ -16,4 +16,13 @@ export function onload(_e: Event) {
     .then(RenderNav);
   //alerts
   BootstrapAlerts();
+}
+
+export function onload(_e: Event) {
+  bootstrapApp()
+    .then(() => import("@cloud-router/index"))
+    .then((module) => module.default)
+    .then((AppRouter) => {
+      AppRouter?.sync?.();
+    });
 }

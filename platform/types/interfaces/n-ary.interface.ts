@@ -22,7 +22,7 @@ export default interface N_Ary<T> {
   // O(1) Insertion (if we have the Map)
   insert(
     parentId: string | null,
-    node: T | N_ary_Node<T>
+    node: T | N_ary_Node<T>,
   ): N_ary_Node<T> | null;
 
   remove(target: string | N_ary_Node<T>): boolean;

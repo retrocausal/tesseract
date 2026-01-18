@@ -1,3 +1,4 @@
+import type PlatformRouterTemplate from "@platform/types/interfaces/platform-router.interface";
 import type {
   RouteUpdateType,
   QP,
@@ -12,3 +13,11 @@ export type AppRouteEvents = {
     relativePath: string | undefined;
   };
 };
+
+export type Resolver = (value: string) => void;
+
+export type StaticResolverMap = Map<string, Resolver[]>;
+
+export interface AppRouterStatic {
+  new (): PlatformRouterTemplate;
+}

@@ -5,18 +5,21 @@ import type {
   RouterEvents,
 } from "@platform-types/interfaces/platform-router.interface";
 import Emitter from "@platform-structs/emitter.struct";
-abstract class PlatformRouter<X extends Record<string, any> = {}>
-  implements PlatformRouterTemplate
-{
+abstract class PlatformRouter<
+  X extends Record<string, any> = {},
+> implements PlatformRouterTemplate {
   protected emitter: Emitter<RouterEvents & Omit<X, keyof RouterEvents>> =
     new Emitter<RouterEvents & Omit<X, keyof RouterEvents>>();
 
-  public abstract onRouteChange(
-    payload: RouterEvents[keyof RouterEvents]
+  protected abstract onRouteChange(
+    payload: RouterEvents[keyof RouterEvents],
   ): void;
 
   constructor() {
     window.addEventListener("popstate", this.onPOP.bind(this));
+  }
+  protected sync(): void {
+    this.emitState({ ...(window?.history?.state || {}) }, "POP");
   }
 
   private onPOP(e: unknown) {
@@ -52,7 +55,7 @@ abstract class PlatformRouter<X extends Record<string, any> = {}>
 
   private emit<K extends keyof RouterEvents>(
     name: K,
-    payload: RouterEvents[K]
+    payload: RouterEvents[K],
   ) {
     this.onRouteChange?.(payload);
     (this.emitter as any).emit(name, payload);

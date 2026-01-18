@@ -14,12 +14,12 @@ import {
 export function onclick(
   e: Event,
   nodeMap: Map<string, N_ary_Node<NavItem>>,
-  state: Set<string>
+  state: Set<string> | undefined,
 ) {
   e.stopPropagation();
   const [target, parentNode] = getTargets(e);
   const id = target?.getAttribute("id");
-  if (target && id) {
+  if (target && id && state) {
     toggle(id, state);
     const node = nodeMap?.get(id);
     if (node && parentNode) {

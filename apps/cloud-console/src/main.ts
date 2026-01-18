@@ -1,4 +1,4 @@
 import * as handlers from "@cloud/handlers/index";
-const $ = document;
 
+const $ = document;
 $.addEventListener("DOMContentLoaded", handlers.onload);

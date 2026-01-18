@@ -3,7 +3,6 @@ export default interface PlatformRouterTemplate {
   readonly queryParams: QP | null;
   readonly pathFragments: string[];
   readonly path: string;
-  onRouteChange(payload: RouterEvents[keyof RouterEvents]): void;
 }
 
 export type RouterEvents = {

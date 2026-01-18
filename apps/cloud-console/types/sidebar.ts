@@ -22,13 +22,17 @@ export type InfrastructureType =
   | "pod";
 export type Status = "active" | "degraded" | "offline" | "booting";
 
-export type EventBinder = {
+export type NavData = {
   state: Set<string> | undefined;
   tree: N_ary<NavItem> | undefined;
-  parent: HTMLElement | Element | null;
+  root: HTMLElement | Element | null;
 };
 
-export type BootstrapConfig = {
+export type Scaffolder = {
   data: NavItem[];
+  container: Element | HTMLElement | null;
+};
+export type Scaffolding = {
+  tree: N_ary<NavItem>;
   container: Element | HTMLElement | null;
 };
