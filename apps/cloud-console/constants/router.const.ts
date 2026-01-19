@@ -1,24 +1,24 @@
-export const CLOUD_CONSOLE_ROUTE_KEYS = {
-  RES_ID: "RESOURCE_IDENTIFIER",
-  ALERT_DETAIL: "ALERT_DETAILER",
-} as const;
+import { ROUTE_KEYS, type Routes } from "@cloud-types/router.types";
 
-// Helper Type: Extracts "RESOURCE_IDENTIFIER" | "ALERT_DETAILER"
-export type RouteIdentifier =
-  (typeof CLOUD_CONSOLE_ROUTE_KEYS)[keyof typeof CLOUD_CONSOLE_ROUTE_KEYS];
-
-const PATH_GREPPERS: Record<string, RegExp> = {
-  [CLOUD_CONSOLE_ROUTE_KEYS.RES_ID]: /\/resource\/([a-zA-Z0-9_-]+)/i,
-  [CLOUD_CONSOLE_ROUTE_KEYS.ALERT_DETAIL]: /\/alert\/([a-zA-Z0-9_-]+)/i,
+export const CLOUD_CONSOLE_ROUTES: Routes = {
+  [ROUTE_KEYS.RESOURCE]: {
+    captureExpression: /\/resource\/([a-zA-Z0-9_-]+)/i,
+    route: (id: string) => `/resource/${id}`,
+  },
+  [ROUTE_KEYS.ALERT]: {
+    captureExpression: /\/alert\/([a-zA-Z0-9_-]+)/i,
+    route: (id: string) => `/alert/${id}`,
+  },
+  [ROUTE_KEYS.LOG]: {
+    captureExpression: /\/log\/([a-zA-Z0-9_-]+)/i,
+    route: (id: string) => `/log/${id}`,
+  },
 };
 
-type Constant = Record<
-  string,
-  Record<string, RegExp> | string | Record<string, string>
->;
+type Constant = Record<string, Routes | string>;
 
 const CLOUD_CONSOLE_ROUTE_CONSTANTS = {
-  Identifiers: PATH_GREPPERS,
+  routes: CLOUD_CONSOLE_ROUTES,
   APP_BASE: "cloud-console",
 } satisfies Constant;
 

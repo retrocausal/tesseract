@@ -10,6 +10,7 @@ abstract class PlatformRouter<
 > implements PlatformRouterTemplate {
   protected emitter: Emitter<RouterEvents & Omit<X, keyof RouterEvents>> =
     new Emitter<RouterEvents & Omit<X, keyof RouterEvents>>();
+  private readonly PLATFORM_ROOT = "/apps";
 
   protected abstract onRouteChange(
     payload: RouterEvents[keyof RouterEvents],
@@ -70,15 +71,36 @@ abstract class PlatformRouter<
     });
   }
 
+  private sanitize(path: string) {
+    // 1. Validation: Ensure we aren't getting absolute URLs
+    if (path.startsWith("http")) {
+      throw new Error("PlatformRouter: accepts only relative paths.");
+    }
+
+    // 2. Normalization: Ensure leading slash for safety
+    const fragment = path.startsWith("/") ? path : `/${path}`;
+
+    // 3. Construction
+    return `${this.PLATFORM_ROOT}${fragment}`;
+  }
+
   protected replace(url: string, state: RouteState | null): void {
-    window?.history?.replaceState(state, "", url);
-    const routeState = state ?? ({} as RouteState);
-    this.emitState(routeState, "REPLACE");
+    try {
+      window?.history?.replaceState(state, "", this.sanitize(url));
+      const routeState = state ?? ({} as RouteState);
+      this.emitState(routeState, "REPLACE");
+    } catch (error) {
+      console.error(error);
+    }
   }
   protected push(url: string, state: RouteState | null): void {
-    window?.history?.pushState(state, "", url);
-    const routeState = state ?? ({} as RouteState);
-    this.emitState(routeState, "PUSH");
+    try {
+      window?.history?.pushState(state, "", this.sanitize(url));
+      const routeState = state ?? ({} as RouteState);
+      this.emitState(routeState, "PUSH");
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 

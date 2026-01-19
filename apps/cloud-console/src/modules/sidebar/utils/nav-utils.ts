@@ -6,7 +6,7 @@ const STATUS_SEV_INDICES = ["active", "booting", "degraded", "offline"];
 
 export const propagateState = (
   payload: StatusDispatch,
-  nodes: Map<string, N_ary_Node<NavItem>>
+  nodes: Map<string, N_ary_Node<NavItem>>,
 ) => {
   const { id, status } = payload;
   const propagatedUpdates: Map<string, string> = new Map();
@@ -62,19 +62,4 @@ export const propagateState = (
 export function toggleNavState(id: string, state: Set<string>) {
   const op = state.has(id) ? "delete" : "add";
   state[op]?.(id);
-}
-
-export function mutateHistory(id: string) {
-  const URI = new URL(window?.location?.href);
-  const pathName = URI?.pathname;
-  if (pathName) {
-    let newName = "";
-    if (pathName.includes("/resource")) {
-      const newNameFragment = pathName.split("/resource");
-      newNameFragment?.pop();
-      newName = newNameFragment?.join("/");
-    }
-    URI.pathname = `${newName}/resource/${id}`;
-    window.history.pushState(null, "", URI.pathname);
-  }
 }

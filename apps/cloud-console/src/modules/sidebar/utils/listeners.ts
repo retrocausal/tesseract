@@ -1,15 +1,14 @@
 import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
 import type { NavItem } from "@cloud-types/sidebar";
-import {
-  toggleNavState as toggle,
-  mutateHistory,
-} from "@cloud-modules/sidebar/utils/nav-utils";
+import { toggleNavState as toggle } from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   getTargets,
   rebuild,
   setStatusClass,
   setSelected,
 } from "@cloud-modules/sidebar/view";
+import AppRouter from "@cloud-router/index";
+import { ROUTE_KEYS } from "@cloud-types/router.types";
 
 export function onclick(
   e: Event,
@@ -23,10 +22,9 @@ export function onclick(
     toggle(id, state);
     const node = nodeMap?.get(id);
     if (node && parentNode) {
-      const newNode = rebuild(node, state, target, parentNode);
-      newNode?.focus();
+      rebuild(node, state, target, parentNode);
       setSelected(id);
-      mutateHistory(id);
+      AppRouter.navigate(ROUTE_KEYS.RESOURCE, id);
     }
   }
 }

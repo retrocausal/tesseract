@@ -19,7 +19,7 @@ export const setStatusClass = (el: HTMLElement, status: string | undefined) => {
 export function render(
   node: N_ary_Node<NavItem>,
   state: Set<string>,
-  innerHTML: boolean = false
+  innerHTML: boolean = false,
 ): HTMLElement {
   const build = (node: N_ary_Node<NavItem>) => {
     const { children, value, id } = node;
@@ -72,7 +72,7 @@ export function rebuild(
   node: N_ary_Node<NavItem>,
   state: Set<string>,
   target: Element,
-  parent: Element
+  parent: Element,
 ): HTMLElement {
   const newNode = render(node, state, true);
   parent?.replaceChild(newNode, target);
@@ -85,5 +85,6 @@ export function setSelected(id: string | null | undefined) {
     previous?.classList.remove("selected");
     const node = document?.getElementById(id);
     node?.classList.add("selected");
+    node?.focus();
   }
 }

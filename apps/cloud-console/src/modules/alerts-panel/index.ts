@@ -47,7 +47,7 @@ function buildFrame(struct: GenericHeap<Alert>, currentState: Alert[]): void {
 export function onload() {
   let UIStream: Alert[] = new Array();
   const MaxHeap = new Heap<Alert>(
-    (a, b) => (b?.priority || 0) - (a?.priority || 0)
+    (a, b) => (b?.priority || 0) - (a?.priority || 0),
   );
   EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
     const { id, priority, alerts, severity } = payload;
@@ -65,7 +65,7 @@ export function onload() {
   let streamBeingWatched = false;
   let focusedAlert: string | null = null;
   const alertList = document.querySelector(
-    "main #alerts .alert-stream .list"
+    "main #alerts .alert-stream .list",
   ) as HTMLUListElement;
   alertList.onmouseenter = function (e) {
     streamBeingWatched = true;

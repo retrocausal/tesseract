@@ -13,8 +13,8 @@ import {
   onclick,
   onStatusChange,
 } from "@cloud-modules/sidebar/utils/listeners";
-import type { RouteIdentifier } from "@cloud-constants/router.const";
-import { CLOUD_CONSOLE_ROUTE_KEYS } from "@cloud-constants/router.const";
+import type { RouteIdentifier } from "@cloud-types/router.types";
+import { ROUTE_KEYS } from "@cloud-types/router.types";
 
 export const onStatusReception = "OnStatusChange";
 
@@ -93,7 +93,7 @@ async function enrollURIChangeListener(
   if (fn) {
     const module = await import("@cloud-router/index");
     const AppRouter = module?.default;
-    const key: RouteIdentifier = CLOUD_CONSOLE_ROUTE_KEYS.RES_ID;
+    const key: RouteIdentifier = ROUTE_KEYS.RESOURCE;
     AppRouter?.registerURIChangeListeners(fn, key);
   }
 }
@@ -109,27 +109,3 @@ export function onload(navInitializer: Scaffolder) {
       });
   }
 }
-
-/**
- * 
- * 
-      .then(attachEventListeners)
-.then(mockRandomUpdates)
-      .then(attachStateChangeListeners)
-
-      const URI = new URL(window?.location?.href);
-      const pathName = URI?.pathname;
-      let resourceID;
-      if (pathName && pathName.includes("/resource/")) {
-        resourceID = hydrateStateFromURL(state, tree, URI);
-      }
-      if (resourceID) {
-        setSelected(resourceID);
-      }
- */
-
-/**
-       * 
-       * 
-
-       */
