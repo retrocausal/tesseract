@@ -6,23 +6,25 @@ import type {
   Scaffolder as SidebarBootstrapper,
 } from "@cloud-types/sidebar";
 
-async function bootstrapApp() {
+function bootstrapApp() {
   //sidebar
-  fetchInfrastructureNav()
+  const sidebar = fetchInfrastructureNav()
     .then((data: NavItem[]) => {
       const root = document.querySelector("main #nav");
       return { data, container: root } as SidebarBootstrapper;
     })
     .then(RenderNav);
   //alerts
-  BootstrapAlerts();
+  const alerts = Promise.resolve(BootstrapAlerts());
+  return Promise.all([sidebar, alerts]);
 }
 
 export function onload(_e: Event) {
-  bootstrapApp()
-    .then(() => import("@cloud-router/index"))
-    .then((module) => module.default)
-    .then((AppRouter) => {
-      AppRouter?.sync?.();
-    });
+  bootstrapApp().then(() => {
+    import("@cloud-router/index")
+      .then((module) => module.default)
+      .then((AppRouter) => {
+        AppRouter?.sync();
+      });
+  });
 }

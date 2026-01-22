@@ -5,16 +5,23 @@ import type {
   NavData,
   Scaffolder,
   Scaffolding,
+  RouterPlugs,
 } from "@cloud-types/sidebar";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
-import { render, setSelected } from "@cloud-modules/sidebar/view";
+import { render } from "@cloud-modules/sidebar/view";
 import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   onclick,
   onStatusChange,
+  hydrateStateFromURL,
 } from "@cloud-modules/sidebar/utils/listeners";
-import type { RouteIdentifier } from "@cloud-types/router.types";
+import type {
+  RouteUpdate,
+  RouteIdentifier,
+  Subscriber,
+} from "@cloud-types/router.types";
 import { ROUTE_KEYS } from "@cloud-types/router.types";
+import type { Resolver } from "@cloud-types/router.types";
 
 export const onStatusReception = "OnStatusChange";
 
@@ -39,19 +46,17 @@ function attachStateChangeListeners(tree: N_Ary<NavItem>) {
   });
 }
 
-async function initialiseConsole(arg: Scaffolding): Promise<NavData> {
+async function initNav(arg: Scaffolding): Promise<NavData> {
   const { tree, container } = arg;
   let state: Set<string> | undefined,
     list = null;
-  if (container) {
-    const rootNode = tree?.root;
+  const rootNode = tree?.root;
+  if (container && rootNode) {
     state = new Set<string>();
-    if (rootNode) {
-      list = render(rootNode, state);
-      container?.append(list);
-      list?.addEventListener("click", (e) => onclick(e, tree.nodes, state));
-      list?.addEventListener(onStatusReception, onStatusChange);
-    }
+    list = render(rootNode, state);
+    container?.append(list);
+    list?.addEventListener("click", onclick);
+    list?.addEventListener(onStatusReception, onStatusChange);
   }
   return { state, tree, root: list };
 }
@@ -63,49 +68,41 @@ async function bootstrap(arg: Scaffolder) {
       tree: NaryTree?.from(arg?.data),
       container: arg?.container,
     }))
-    .then(initialiseConsole);
+    .then(initNav);
 }
 
 async function run(data: NavData) {
   const { state, tree, root } = data;
+  let onURIChange: Resolver | undefined;
   if (state && tree && root) {
     attachStateChangeListeners(tree);
     mockRandomUpdates(tree);
-    function hydrateStateFromURL(resourceID: string) {
-      if (resourceID) {
-        const lineage = tree?.lineage(resourceID);
-        if (lineage) {
-          for (let i = lineage.length - 1; i > -1; i--) {
-            const resource = lineage[i];
-            state?.add(resource.id);
-          }
-        }
-        setSelected(resourceID);
-      }
-    }
-    return hydrateStateFromURL;
+    onURIChange = (id: string) => hydrateStateFromURL(id, tree, state);
   }
+  return { onURIChange };
 }
 
-async function enrollURIChangeListener(
-  fn: ((resourceID: string) => void) | undefined,
-) {
-  if (fn) {
-    const module = await import("@cloud-router/index");
-    const AppRouter = module?.default;
+async function subscribeToRouterUpdates<A extends RouterPlugs>(listenerMap: A) {
+  const { onURIChange, onRouteUpdate } = listenerMap;
+  const module = await import("@cloud-router/index");
+  const AppRouter = module?.default;
+  if (onURIChange) {
     const key: RouteIdentifier = ROUTE_KEYS.RESOURCE;
-    AppRouter?.registerURIChangeListeners(fn, key);
+    AppRouter?.registerURIChangeListeners(onURIChange, key);
+  }
+  if (onRouteUpdate) {
+    AppRouter?.subscribe("cloud:route:update", onRouteUpdate);
   }
 }
 
 export function onload(navInitializer: Scaffolder) {
   if (navInitializer) {
-    Promise.resolve(navInitializer)
-      .then(bootstrap)
+    return bootstrap(navInitializer)
       .then(run)
-      .then(enrollURIChangeListener)
+      .then(subscribeToRouterUpdates)
       .catch((e) => {
         console.warn(e);
       });
   }
+  return Promise.reject();
 }

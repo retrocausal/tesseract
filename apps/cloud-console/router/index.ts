@@ -24,7 +24,6 @@ class AppRouter extends PlatformRouter<AppRouteEvents> {
     const splitter = CLOUD_CONSOLE_ROUTE_CONSTANTS.APP_BASE;
     const relativePath = path?.split(splitter as string)?.pop();
     const { query, type, state } = payload;
-    const { URI_CHANGE_SUBSCRIBERS } = this;
     const routeCaptures: GREPPEDINFO[] = new Array();
     const { routes } = CLOUD_CONSOLE_ROUTE_CONSTANTS;
 
@@ -34,24 +33,25 @@ class AppRouter extends PlatformRouter<AppRouteEvents> {
       const matches = relativePath?.match(expression);
       if (matches) {
         const value = matches[1];
+
         if (value) {
           routeCaptures.push({ key: id, value });
         }
-        if (URI_CHANGE_SUBSCRIBERS.has(id)) {
-          const listeners = URI_CHANGE_SUBSCRIBERS.get(id);
+        if (this.URI_CHANGE_SUBSCRIBERS.has(id)) {
+          const listeners = this.URI_CHANGE_SUBSCRIBERS.get(id);
           listeners?.forEach((fn) => fn?.(value));
         }
       }
     });
-
-    this.emitter.emit("cloud:route:update", {
+    const eventPayload = {
       query,
       state: state || {},
       type,
       path,
       relativePath,
       routeCaptures,
-    });
+    };
+    this.emitter.emit("cloud:route:update", eventPayload);
   }
 
   sync(): void {

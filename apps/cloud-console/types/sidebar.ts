@@ -1,3 +1,4 @@
+import { Resolver, Subscriber } from "@cloud-types/router.types";
 import type { default as N_ary } from "@platform/types/interfaces/n-ary.interface";
 
 export type NavItem = {
@@ -35,4 +36,10 @@ export type Scaffolder = {
 export type Scaffolding = {
   tree: N_ary<NavItem>;
   container: Element | HTMLElement | null;
+};
+
+export type RouterPlugs = {
+  onURIChange?: Resolver;
+  onRouteUpdate?: Subscriber;
+  [key: string]: Subscriber | Resolver | undefined;
 };

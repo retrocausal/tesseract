@@ -71,11 +71,22 @@ export function getTargets(e: unknown): (Element | null | undefined)[] {
 export function rebuild(
   node: N_ary_Node<NavItem>,
   state: Set<string>,
-  target: Element,
-  parent: Element,
-): HTMLElement {
-  const newNode = render(node, state, true);
-  parent?.replaceChild(newNode, target);
+  target?: HTMLElement,
+  parent?: HTMLElement,
+): HTMLElement | undefined {
+  let child: HTMLElement | undefined = target;
+  let ancestor: HTMLElement | undefined = parent;
+  let newNode;
+  if (!target) {
+    child = document.getElementById(node.id) ?? undefined;
+  }
+  if (!parent) {
+    ancestor = child?.parentElement ?? child?.closest(".nav-list") ?? undefined;
+  }
+  if (ancestor && child) {
+    newNode = render(node, state, true);
+    ancestor.replaceChild(newNode, child);
+  }
   return newNode;
 }
 

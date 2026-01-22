@@ -67,10 +67,10 @@ export function onload() {
   const alertList = document.querySelector(
     "main #alerts .alert-stream .list",
   ) as HTMLUListElement;
-  alertList.onmouseenter = function (e) {
+  alertList.onmouseenter = function (_e) {
     streamBeingWatched = true;
   };
-  alertList.onmouseleave = function (e) {
+  alertList.onmouseleave = function (_e) {
     streamBeingWatched = false;
   };
   alertList.onclick = function (e) {

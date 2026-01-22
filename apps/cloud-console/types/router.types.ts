@@ -5,15 +5,17 @@ import type {
 } from "@platform/types/interfaces/platform-router.interface";
 import type { Serializable } from "@platform/types/interfaces/serializable.interface";
 
+export type RouteUpdate = {
+  type: RouteUpdateType;
+  state: Serializable;
+  query: QP;
+  path: string;
+  relativePath: string | undefined;
+  routeCaptures: GREPPEDINFO[];
+};
+
 export type AppRouteEvents = {
-  "cloud:route:update": {
-    type: RouteUpdateType;
-    state: Serializable;
-    query: QP;
-    path: string;
-    relativePath: string | undefined;
-    routeCaptures: GREPPEDINFO[];
-  };
+  "cloud:route:update": RouteUpdate;
 };
 
 export enum ROUTE_KEYS {
@@ -36,7 +38,8 @@ export type GREPPEDINFO = {
   value: string;
 };
 
-export type Resolver = (value: string) => void;
+export type Resolver = (V: string) => void;
+export type Subscriber = (T: RouteUpdate) => void;
 
 export type StaticResolverMap = Map<RouteIdentifier, Resolver[]>;
 
