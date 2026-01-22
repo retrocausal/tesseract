@@ -27,11 +27,13 @@ export enum ROUTE_KEYS {
 export type RouteIdentifier = (typeof ROUTE_KEYS)[keyof typeof ROUTE_KEYS];
 
 export type RouteDefinition = {
+  route(identifiers: NavMap): string;
   captureExpression: RegExp;
-  route(id: string): string;
 };
 
 export type Routes = Record<RouteIdentifier, RouteDefinition>;
+export type Greppers = Record<RouteIdentifier, RegExp>;
+export type NavMap = Partial<Record<RouteIdentifier, string>>;
 
 export type GREPPEDINFO = {
   key: RouteIdentifier;

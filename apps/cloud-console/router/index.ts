@@ -1,15 +1,17 @@
 import PlatformRouter from "@platform/types/abstracts/platform-router.abstract";
-import type {
-  AppRouteEvents,
-  StaticResolverMap,
-  AppRouterStatic,
-  Resolver,
-  GREPPEDINFO,
+import {
+  type AppRouteEvents,
+  type StaticResolverMap,
+  type AppRouterStatic,
+  type Resolver,
+  type GREPPEDINFO,
 } from "@cloud-types/router.types";
 import type { RouterEvents } from "@platform/types/interfaces/platform-router.interface";
 import type { Listener } from "@platform/types/interfaces/emitter.interface";
-import CLOUD_CONSOLE_ROUTE_CONSTANTS from "@cloud-constants/router.const";
-import type { RouteIdentifier } from "@cloud-types/router.types";
+import CLOUD_CONSOLE_ROUTE_CONSTANTS, {
+  CLOUD_CONSOLE_ROUTES,
+} from "@cloud-constants/router.const";
+import type { NavMap, RouteIdentifier } from "@cloud-types/router.types";
 
 function StaticImplements<I>() {
   return (_constructor: I) => {};
@@ -25,11 +27,10 @@ class AppRouter extends PlatformRouter<AppRouteEvents> {
     const relativePath = path?.split(splitter as string)?.pop();
     const { query, type, state } = payload;
     const routeCaptures: GREPPEDINFO[] = new Array();
-    const { routes } = CLOUD_CONSOLE_ROUTE_CONSTANTS;
 
-    Object.keys(routes).forEach((key) => {
-      const id = key as keyof typeof routes;
-      const { captureExpression: expression } = routes[id];
+    Object.keys(CLOUD_CONSOLE_ROUTES).forEach((key) => {
+      const id = key as RouteIdentifier;
+      const expression = CLOUD_CONSOLE_ROUTES[id].captureExpression;
       const matches = relativePath?.match(expression);
       if (matches) {
         const value = matches[1];
@@ -71,15 +72,14 @@ class AppRouter extends PlatformRouter<AppRouteEvents> {
     this.URI_CHANGE_SUBSCRIBERS.get(key)?.push(fn);
   }
 
-  navigate(key: RouteIdentifier, id: string, replace: boolean = false) {
-    const { routes, APP_BASE } = CLOUD_CONSOLE_ROUTE_CONSTANTS;
+  navigate(as: RouteIdentifier, identifiers: NavMap, replace: boolean = false) {
+    const { APP_BASE } = CLOUD_CONSOLE_ROUTE_CONSTANTS;
     const op = replace ? "replace" : "push";
-    if (routes[key] && id) {
-      const definition = routes[key];
-      const { route } = definition;
-      const path = route(id);
+
+    try {
+      let path = CLOUD_CONSOLE_ROUTES[as]?.route(identifiers);
       super[op]?.(`/${APP_BASE}${path}`, {});
-    }
+    } catch (error) {}
   }
 }
 

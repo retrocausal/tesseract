@@ -14,7 +14,8 @@ export function onclick(e: Event) {
   e.stopPropagation();
   const [target] = getTargets(e);
   const id = target?.getAttribute("id");
-  if (id) AppRouter.navigate(ROUTE_KEYS.RESOURCE, id);
+  if (id)
+    AppRouter.navigate(ROUTE_KEYS.RESOURCE, { [ROUTE_KEYS.RESOURCE]: id });
 }
 
 export function onStatusChange(e: unknown) {
