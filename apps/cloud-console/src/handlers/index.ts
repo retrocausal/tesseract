@@ -15,16 +15,21 @@ function bootstrapApp() {
     })
     .then(RenderNav);
   //alerts
-  const alerts = Promise.resolve(BootstrapAlerts());
+  const alerts = BootstrapAlerts(
+    document.querySelector("main #alerts .alert-stream .list"),
+  );
+
   return Promise.all([sidebar, alerts]);
 }
 
 export function onload(_e: Event) {
-  bootstrapApp().then(() => {
-    import("@cloud-router/index")
-      .then((module) => module.default)
-      .then((AppRouter) => {
-        AppRouter?.sync();
-      });
-  });
+  bootstrapApp()
+    .then(() => {
+      import("@cloud-router/index")
+        .then((module) => module.default)
+        .then((AppRouter) => AppRouter?.sync());
+    })
+    .catch((e) => {
+      console.error(e);
+    });
 }

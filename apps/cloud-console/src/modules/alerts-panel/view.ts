@@ -3,12 +3,12 @@ import "@cloud-modules/alerts-panel/styles/index.css";
 export default function render(
   alerts: Alert[],
   root: HTMLUListElement,
-  focusedAlert?: string | null
+  focusedAlert?: string | null,
 ): void {
   const fragment = document.createDocumentFragment();
   if (alerts.length) {
     for (const alert of alerts) {
-      const { message, id: itemId, severity, time } = alert;
+      const { alert: message, id: itemId, severity, time } = alert;
       const li = document.createElement("li");
       li.setAttribute("id", itemId);
       const alertHead = document.createElement("h4");

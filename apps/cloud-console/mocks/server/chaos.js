@@ -82,16 +82,20 @@ function generateStrictLog(state) {
     level = rand(LOG_LEVELS.info);
     msg = rand(HEALTHY_MSGS);
   }
-  return `[${timestamp}] [${level}] ${msg} [trace:${Math.random()
-    .toString(16)
-    .substr(2, 6)}]`;
+  return {
+    id: `log-${crypto.randomUUID()}`,
+    message: `[${timestamp}] [${level}] ${msg} [trace:${Math.random()
+      .toString(16)
+      .substr(2, 6)}]`,
+  };
 }
 
 function generateStrictAlert(id, state) {
   return JSON.stringify({
     kind: "alert:dispatch",
-    id,
-    alerts: [`${rand(ALERT_TYPES[state])}: Detected on ${id}`],
+    resourceId: id,
+    id: `alert-${crypto.randomUUID()}`,
+    message: `${rand(ALERT_TYPES[state])}: Detected on ${id}`,
     priority: SEVERITY_MAP[state],
     severity: state,
   });
@@ -106,9 +110,9 @@ const createLogPayload = (id, state) => {
   else if (state === "warning") batchSize = randInt(2, 4);
 
   const logs = Array.from({ length: batchSize }, () =>
-    generateStrictLog(state)
+    generateStrictLog(state),
   );
-  return JSON.stringify({ kind: "log:dispatch", id, logs });
+  return JSON.stringify({ kind: "log:dispatch", resourceId: id, logs });
 };
 
 const createStatusPayload = (id, state) => {
@@ -151,7 +155,7 @@ wss.on("connection", (ws) => {
         buckets.info = shuffled.slice(cCount + wCount);
 
         console.log(
-          `Partitioned: ${buckets.critical.length} Critical, ${buckets.warning.length} Warning, ${buckets.info.length} Healthy.`
+          `Partitioned: ${buckets.critical.length} Critical, ${buckets.warning.length} Warning, ${buckets.info.length} Healthy.`,
         );
 
         if (loop) clearInterval(loop);
@@ -177,11 +181,11 @@ function firehose(ws, buckets) {
     const trafficRoll = Math.random();
     let targetId, state;
 
-    if (trafficRoll < TRAFFIC_PROB.critical && buckets.critical.length > 0) {
+    if (trafficRoll <= TRAFFIC_PROB.critical && buckets.critical.length > 0) {
       targetId = rand(buckets.critical);
       state = "critical";
     } else if (
-      trafficRoll < TRAFFIC_PROB.critical + TRAFFIC_PROB.warning &&
+      trafficRoll <= TRAFFIC_PROB.critical + TRAFFIC_PROB.warning &&
       buckets.warning.length > 0
     ) {
       targetId = rand(buckets.warning);

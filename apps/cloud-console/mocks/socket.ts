@@ -1,21 +1,21 @@
 import type N_Ary from "@platform/types/interfaces/n-ary.interface";
 import type { NavItem } from "@cloud-types/sidebar";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
-import type { Dispatch } from "@cloud-types/emitter.types";
+import type {
+  AlertDispatch,
+  LogDispatch,
+  StatusDispatch,
+} from "@cloud-types/emitter.types";
 
 // 1. Define what the Socket sends us (The Contract)
-type SocketMessage = {
-  kind: Dispatch;
-  id: string;
-  status?: string;
-  alerts?: string[];
-  logs?: string[];
-  priority?: number;
-  severity?: string;
-};
+interface SocketMessage
+  extends
+    Partial<AlertDispatch>,
+    Partial<LogDispatch>,
+    Partial<StatusDispatch> {}
 
 export default function websocketProvider(
-  tree: N_Ary<NavItem> | undefined
+  tree: N_Ary<NavItem> | undefined,
 ): N_Ary<NavItem> | undefined {
   const socket = new WebSocket("ws://localhost:17000");
   if (tree) {
@@ -23,7 +23,7 @@ export default function websocketProvider(
       setTimeout(() => {
         const { nodes } = tree;
         const nodeList = Array.from(nodes).filter(
-          (node) => node[1]?.value?.kind === "pod"
+          (node) => node[1]?.value?.kind === "pod",
         );
         const ids = nodeList.map((node) => node[0]);
         socket.send(JSON.stringify({ ids }));
@@ -35,26 +35,29 @@ export default function websocketProvider(
       const data = JSON.parse(event?.data) as SocketMessage;
       console.log(data);
 
-      const { kind, status, alerts, logs, id, priority, severity } = data;
+      const { kind, status, alert, logs, id, priority, severity, resourceId } =
+        data;
       // 3. Handle the correlation strictly
       // We cannot just pass 'data' blindly because the payloads differ.
       switch (kind) {
         case "status:update":
-          if (status) EventPubSubProvider.emit(kind, { kind, id, status });
+          if (status && id)
+            EventPubSubProvider.emit(kind, { kind, id, status });
           break;
         case "alert:dispatch":
-          if (alerts && alerts.length)
+          if (alert && resourceId && id)
             EventPubSubProvider.emit(kind, {
               kind,
               id,
-              alerts,
+              alert,
               priority: priority || 0,
               severity: severity || "",
+              resourceId,
             });
           break;
         case "log:dispatch":
-          if (logs && logs.length)
-            EventPubSubProvider.emit(kind, { kind, id, logs });
+          if (logs && logs.length && resourceId)
+            EventPubSubProvider.emit(kind, { kind, logs, resourceId });
           break;
       }
     };

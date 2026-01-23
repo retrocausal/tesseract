@@ -1,110 +1,81 @@
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { default as Heap } from "@platform/structures/heap.struct";
-import type { Alert } from "@cloud-types/alerts.types";
-import type GenericHeap from "@platform/types/interfaces/heap";
+import type { Alert, AlertPanelState } from "@cloud-types/alerts.types";
 import render from "@cloud-modules/alerts-panel/view";
+import { ComparatorFn } from "@platform/types/interfaces/heap";
+import { Scaffolding } from "@cloud-types/alerts.types";
+import {
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+} from "@cloud-modules/alerts-panel/utils/listeners";
+import CONFIG from "@cloud-modules/alerts-panel/config";
+import { buildFrame, currentTime } from "@cloud/modules/alerts-panel/utils";
 
-const LIMIT = 50;
-const BUFFER = 20;
-const TIMEINTERVAL = 1800;
+const { TIMEINTERVAL } = CONFIG;
 
-function currentTime(): string {
-  // 1. Get the best available locales as an array
-  const locale = window?.navigator?.languages || [
-      window?.navigator?.language,
-    ] || [new Intl.DateTimeFormat().resolvedOptions().locale] || ["en-US"];
-
-  return new Date().toLocaleTimeString(locale, {
-    hour12: false,
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function buildFrame(struct: GenericHeap<Alert>, currentState: Alert[]): void {
-  const state = currentState;
-  if (state.length < LIMIT) {
-    let diff = LIMIT - state.length;
-    while (diff > 0) {
-      diff--;
-      const next = struct.pop();
-      if (next) state.push(next);
-      else break;
-    }
-  } else {
-    let index = BUFFER;
-    while (index) {
-      index--;
-      const next = struct.pop();
-      if (next) {
-        state.shift();
-        state.push(next);
-      } else break;
-    }
-  }
-}
-
-export function onload() {
-  let UIStream: Alert[] = new Array();
-  const MaxHeap = new Heap<Alert>(
-    (a, b) => (b?.priority || 0) - (a?.priority || 0),
-  );
-  EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
-    const { id, priority, alerts, severity } = payload;
-    alerts?.forEach((alert) => {
-      MaxHeap.add({
-        priority,
-        message: alert,
-        id: `${id}-${priority}-${crypto.randomUUID()}`,
-        severity,
-        time: currentTime(),
-      });
+function subscribe(heap: Heap<Alert>) {
+  return EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
+    const { id, priority, alert, resourceId, severity } = payload;
+    heap.add({
+      priority,
+      alert,
+      id,
+      resourceId,
+      severity,
+      time: currentTime(),
     });
   });
-  let lastFramePainted = -1 * TIMEINTERVAL;
-  let streamBeingWatched = false;
-  let focusedAlert: string | null = null;
-  const alertList = document.querySelector(
-    "main #alerts .alert-stream .list",
-  ) as HTMLUListElement;
-  alertList.onmouseenter = function (_e) {
-    streamBeingWatched = true;
-  };
-  alertList.onmouseleave = function (_e) {
-    streamBeingWatched = false;
-  };
-  alertList.onclick = function (e) {
-    const target = e?.target;
-    if (target instanceof HTMLElement) {
-      const alertNode = target.closest(".item");
-      const activelyFocused = alertNode?.getAttribute("id") ?? null;
-      if (activelyFocused && focusedAlert === activelyFocused)
-        focusedAlert = null;
-      else {
-        if (activelyFocused) {
-          focusedAlert = activelyFocused;
-          lastFramePainted = performance.now();
-        }
-      }
-      alertList.replaceChildren();
-      render(UIStream, alertList, focusedAlert);
-    }
-  };
-  const refresh = () => {
+}
+
+function attachListeners(state: AlertPanelState, root: HTMLUListElement) {
+  root.onmouseenter = onMouseEnter;
+  root.onmouseleave = onMouseLeave;
+  root.onclick = (e) => onClick(e, root, state);
+}
+
+function initPanel(scaffold: Scaffolding) {
+  attachListeners(scaffold.state, scaffold.root);
+  subscribe(scaffold.heap);
+}
+
+async function run(scaffold: Scaffolding) {
+  const { state, root, heap } = scaffold;
+  const paint = () => {
     const now = performance.now();
-    const interval = now - lastFramePainted;
-    const canRefresh =
-      !streamBeingWatched &&
-      interval > TIMEINTERVAL &&
-      MaxHeap.size &&
-      !focusedAlert;
-    if (canRefresh) {
-      buildFrame(MaxHeap, UIStream);
-      alertList.replaceChildren();
-      render(UIStream, alertList);
-      lastFramePainted = performance.now();
+    const diff = now - (state.lastRender ?? 0);
+    const watched = root.dataset.watched || false;
+    const canRender = diff > TIMEINTERVAL && !watched && !state.focussedAlert;
+    const haveAlerts = heap.size;
+    if (haveAlerts && canRender) {
+      buildFrame(heap, state.stream);
+      root.replaceChildren();
+      render(state.stream, root);
+      state.lastRender = performance.now();
     }
-    requestAnimationFrame(refresh);
+    requestAnimationFrame(paint);
   };
-  requestAnimationFrame(refresh);
+  requestAnimationFrame(paint);
+}
+
+async function bootstrap(root: HTMLUListElement): Promise<Scaffolding> {
+  const AlertStream: Alert[] = new Array();
+  const Comparator: ComparatorFn<Alert> = (a, b) =>
+    (b?.priority || 0) - (a?.priority || 0);
+  const MaxHeap = new Heap<Alert>(Comparator);
+  const state: AlertPanelState = {
+    stream: AlertStream,
+    lastRender: null,
+    focussedAlert: null,
+  };
+  const scaffold = { state, heap: MaxHeap, root };
+  initPanel(scaffold);
+  return scaffold;
+}
+
+export function onload(root: HTMLUListElement | null) {
+  if (root) {
+    return bootstrap(root).then(run);
+  }
+  return Promise.reject();
 }
