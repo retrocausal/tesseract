@@ -4,9 +4,9 @@ import type {
   NavItem,
   NavData,
   Scaffolder,
-  Scaffolding,
+  NavScaffolding,
   RouterPlugs,
-} from "@cloud-types/sidebar";
+} from "@cloud-types/sidebar.types";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { render } from "@cloud-modules/sidebar/view";
 import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
@@ -15,11 +15,7 @@ import {
   onStatusChange,
   hydrateStateFromURL,
 } from "@cloud-modules/sidebar/utils/listeners";
-import type {
-  RouteUpdate,
-  RouteIdentifier,
-  Subscriber,
-} from "@cloud-types/router.types";
+import type { RouteIdentifier } from "@cloud-types/router.types";
 import { ROUTE_KEYS } from "@cloud-types/router.types";
 import type { Resolver } from "@cloud-types/router.types";
 
@@ -46,7 +42,7 @@ function attachStateChangeListeners(tree: N_Ary<NavItem>) {
   });
 }
 
-async function initNav(arg: Scaffolding): Promise<NavData> {
+async function initNav(arg: NavScaffolding): Promise<NavData> {
   const { tree, container } = arg;
   let state: Set<string> | undefined,
     list = null;

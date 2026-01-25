@@ -1,9 +1,7 @@
-import type { AlertDispatch } from "@cloud-types/emitter.types";
+import type { FocusedAlertDispatch } from "@cloud-types/emitter.types";
 import BinaryHeap from "@platform/structures/heap.struct";
 
-export interface Alert extends Omit<AlertDispatch, "kind"> {
-  time: string;
-}
+export type Alert = FocusedAlertDispatch & {};
 
 export type AlertPanelState = {
   stream: Alert[];
@@ -11,7 +9,7 @@ export type AlertPanelState = {
   lastRender: number | null;
 };
 
-export type Scaffolding = {
+export type AlertScaffolding = {
   state: AlertPanelState;
   heap: BinaryHeap<Alert>;
   root: HTMLUListElement;

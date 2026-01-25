@@ -6,6 +6,13 @@ import type {
   LogDispatch,
   StatusDispatch,
 } from "@cloud-types/emitter.types";
+import { z } from "zod";
+
+const Schema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("user"), name: z.string() }),
+  z.object({ type: z.literal("error"), message: z.string() }),
+  z.object({ type: z.literal("empty"), timestamp: z.number() }),
+]);
 
 // 1. Define what the Socket sends us (The Contract)
 interface SocketMessage
@@ -33,10 +40,16 @@ export default function websocketProvider(
     socket.onmessage = (event) => {
       // 2. Unsafe Cast: We assert we know the shape of the incoming JSON
       const data = JSON.parse(event?.data) as SocketMessage;
-      console.log(data);
-
-      const { kind, status, alert, logs, id, priority, severity, resourceId } =
-        data;
+      const {
+        kind,
+        status,
+        message,
+        logs,
+        id,
+        priority,
+        severity,
+        resourceId,
+      } = data;
       // 3. Handle the correlation strictly
       // We cannot just pass 'data' blindly because the payloads differ.
       switch (kind) {
@@ -45,11 +58,11 @@ export default function websocketProvider(
             EventPubSubProvider.emit(kind, { kind, id, status });
           break;
         case "alert:dispatch":
-          if (alert && resourceId && id)
+          if (message && resourceId && id)
             EventPubSubProvider.emit(kind, {
               kind,
               id,
-              alert,
+              message,
               priority: priority || 0,
               severity: severity || "",
               resourceId,

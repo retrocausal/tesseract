@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -30,7 +30,7 @@
         --color-bg-app: #0f172a; /* Slate 900 */
         --color-bg-panel: #1e293b; /* Slate 800 */
         --color-bg-sidebar: #00000033; /* Dark overlay */
-
+        --color-bg-accent: #1e33450e;
         /* Text Colors */
         --color-text-primary: #f1f5f9; /* Slate 100 */
         --color-text-secondary: #94a3b8; /* Slate 400 */
@@ -55,10 +55,21 @@
         /* Shadows */
         --shadow-color-primary: #00000080;
         --shadow-color-secondary: #0000004d;
-        --shadow-elevation-lg: 0 10px 15px -3px var(--shadow-color-primary),
+        --shadow-accent-primary: #3f475330;
+        --shadow-accent-secondary: #3e34344d;
+        --shadow-elevation-lg:
+          0 10px 15px -3px var(--shadow-color-primary),
           0 4px 6px -2px var(--shadow-color-secondary);
-        --shadow-elevation-md: 0 4px 6px -1px var(--shadow-color-primary),
+        --shadow-elevation-md:
+          0 4px 6px -1px var(--shadow-color-primary),
           0 2px 4px -1px var(--shadow-color-secondary);
+
+        --shadow-accent-lg:
+          0 10px 15px -3px var(--shadow-accent-primary),
+          0 4px 6px -2px var(--shadow-accent-secondary);
+        --shadow-accent-md:
+          0 4px 6px -1px var(--shadow-accent-primary),
+          0 2px 4px -1px var(--shadow-accent-secondary);
       }
     </style>
   </head>
@@ -71,7 +82,7 @@
         <section class="alert-stream">
           <ul class="list"></ul>
         </section>
-        <section class="details-panel"></section>
+        <section class="details"></section>
       </aside>
     </main>
   </body>

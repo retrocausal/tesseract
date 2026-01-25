@@ -1,4 +1,4 @@
-import type { NavItem } from "@cloud-types/sidebar";
+import type { NavItem } from "@cloud-types/sidebar.types";
 import { toggleNavState as toggle } from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   getTargets,

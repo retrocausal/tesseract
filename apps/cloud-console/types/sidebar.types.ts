@@ -33,7 +33,7 @@ export type Scaffolder = {
   data: NavItem[];
   container: Element | HTMLElement | null;
 };
-export type Scaffolding = {
+export type NavScaffolding = {
   tree: N_ary<NavItem>;
   container: Element | HTMLElement | null;
 };

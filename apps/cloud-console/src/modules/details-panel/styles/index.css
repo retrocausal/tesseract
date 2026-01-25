@@ -1,0 +1,6 @@
+.alert-panel > .details {
+  box-shadow:
+    inset var(--shadow-accent-md),
+    var(--shadow-accent-lg);
+  background-color: var(--color-bg-accent);
+}

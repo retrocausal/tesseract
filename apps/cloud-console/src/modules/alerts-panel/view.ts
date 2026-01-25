@@ -8,9 +8,10 @@ export default function render(
   const fragment = document.createDocumentFragment();
   if (alerts.length) {
     for (const alert of alerts) {
-      const { alert: message, id: itemId, severity, time } = alert;
+      const { message, id, severity, time, resourceId } = alert;
       const li = document.createElement("li");
-      li.setAttribute("id", itemId);
+      li.setAttribute("id", id);
+      li.dataset.resource = resourceId;
       const alertHead = document.createElement("h4");
       alertHead.textContent = message;
       li.className = "item";
@@ -23,7 +24,7 @@ export default function render(
       }
       if (
         focusedAlert &&
-        itemId === focusedAlert &&
+        id === focusedAlert &&
         !li.classList.contains("selected")
       ) {
         li.classList.add("selected");

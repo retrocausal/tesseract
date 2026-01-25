@@ -3,7 +3,7 @@ import { default as Heap } from "@platform/structures/heap.struct";
 import type { Alert, AlertPanelState } from "@cloud-types/alerts.types";
 import render from "@cloud-modules/alerts-panel/view";
 import { ComparatorFn } from "@platform/types/interfaces/heap";
-import { Scaffolding } from "@cloud-types/alerts.types";
+import { AlertScaffolding } from "@cloud-types/alerts.types";
 import {
   onClick,
   onMouseEnter,
@@ -16,10 +16,10 @@ const { TIMEINTERVAL } = CONFIG;
 
 function subscribe(heap: Heap<Alert>) {
   return EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
-    const { id, priority, alert, resourceId, severity } = payload;
+    const { id, priority, message, resourceId, severity } = payload;
     heap.add({
       priority,
-      alert,
+      message,
       id,
       resourceId,
       severity,
@@ -34,12 +34,12 @@ function attachListeners(state: AlertPanelState, root: HTMLUListElement) {
   root.onclick = (e) => onClick(e, root, state);
 }
 
-function initPanel(scaffold: Scaffolding) {
+function initPanel(scaffold: AlertScaffolding) {
   attachListeners(scaffold.state, scaffold.root);
   subscribe(scaffold.heap);
 }
 
-async function run(scaffold: Scaffolding) {
+async function run(scaffold: AlertScaffolding) {
   const { state, root, heap } = scaffold;
   const paint = () => {
     const now = performance.now();
@@ -58,7 +58,7 @@ async function run(scaffold: Scaffolding) {
   requestAnimationFrame(paint);
 }
 
-async function bootstrap(root: HTMLUListElement): Promise<Scaffolding> {
+async function bootstrap(root: HTMLUListElement): Promise<AlertScaffolding> {
   const AlertStream: Alert[] = new Array();
   const Comparator: ComparatorFn<Alert> = (a, b) =>
     (b?.priority || 0) - (a?.priority || 0);

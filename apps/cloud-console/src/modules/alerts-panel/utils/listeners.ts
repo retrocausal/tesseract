@@ -1,5 +1,6 @@
 import { type AlertPanelState } from "@cloud-types/alerts.types";
 import render from "@cloud/modules/alerts-panel/view";
+import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 
 export function onMouseEnter(e: Event) {
   const target = e?.target as HTMLElement;
@@ -25,6 +26,13 @@ export function onClick(
       if (activelyFocused) {
         state.focussedAlert = activelyFocused;
         state.lastRender = performance.now();
+        const dispatchable = state.stream.findIndex(
+          (a) => a.id === activelyFocused,
+        );
+        if (dispatchable >= 0)
+          EventPubSubProvider.emit("focused:alert", {
+            ...state.stream[dispatchable],
+          });
       }
     }
     alertList.replaceChildren();

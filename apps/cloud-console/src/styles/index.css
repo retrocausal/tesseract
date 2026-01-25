@@ -71,6 +71,7 @@ main > aside {
     overflow-y: scroll;
     max-height: 50%;
     height: 50%;
+    width: 100%;
   }
   main > .console-panel {
     flex: 1 1 auto;

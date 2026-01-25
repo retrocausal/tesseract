@@ -1,6 +1,7 @@
 /**
  * CloudCommand Mock Server
  * FIX: Guarantees Critical/Warning traffic volume using Array Partitioning
+ * ENRICHED: Added Labels, Codes, and Real Runbook URLs
  */
 import { WebSocketServer } from "ws";
 
@@ -11,16 +12,15 @@ const wss = new WebSocketServer({ port: PORT });
 const TICK_RATE_MS = 1600;
 const MSGS_PER_TICK = 60;
 
-// 1. Cluster Composition (State distribution across 17k nodes)
-const CRITICAL_PCT = 0.05; // 3% of nodes are Critical
-const WARNING_PCT = 0.09; // 8% of nodes are Warning (Bumped up)
+// 1. Cluster Composition
+const CRITICAL_PCT = 0.05;
+const WARNING_PCT = 0.09;
 
-// 2. Traffic Distribution (Probability of an event coming from a specific bucket)
-// We artificially inflate this so you actually SEE the alerts in the stream.
+// 2. Traffic Distribution
 const TRAFFIC_PROB = {
-  critical: 0.15, // 15% of all messages will come from Critical nodes
-  warning: 0.25, // 25% of all messages will come from Warning nodes
-  info: 0.6, // 60% background noise
+  critical: 0.15,
+  warning: 0.25,
+  info: 0.6,
 };
 
 // --- Mappings ---
@@ -30,11 +30,101 @@ const SEVERITY_MAP = {
   info: 1,
 };
 
-// --- Vocabulary ---
+// --- Vocabulary & Real World Data ---
+
 const LOG_LEVELS = {
   critical: ["CRITICAL", "FATAL"],
   warning: ["WARNING", "WARN"],
   info: ["INFO"],
+};
+
+const TEAMS = ["platform", "checkout", "search", "frontend", "data-science"];
+const REGIONS = ["us-east-1", "eu-west-1", "ap-south-1", "ca-central-1"];
+
+// REAL-WORLD RUNBOOKS
+// We map specific Alert Types to their actual public documentation.
+const ALERT_DEFINITIONS = {
+  critical: [
+    {
+      code: "K8S_NODE_NOT_READY",
+      type: "NodeNotReady",
+      suggestion: "Check kubelet status and node connectivity.",
+      runbookUrl:
+        "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubenodenotready",
+    },
+    {
+      code: "K8S_CRASHLOOP",
+      type: "CrashLoopBackOff",
+      suggestion: "Inspect pod logs for application startup errors.",
+      runbookUrl:
+        "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepodcrashlooping",
+    },
+    {
+      code: "NET_PARTITION",
+      type: "NetworkPartition",
+      suggestion: "Verify CNI plugin status and VPC routes.",
+      runbookUrl:
+        "https://github.com/kubernetes-monitoring/kubernetes-mixin/blob/master/runbook.md#alert-name-kubeproxydown",
+    },
+    {
+      code: "PVC_LOST",
+      type: "PVCLost",
+      suggestion: "Check storage backend connectivity and PV status.",
+      runbookUrl:
+        "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeclaimlost",
+    },
+  ],
+  warning: [
+    {
+      code: "HOST_HIGH_CPU",
+      type: "HighCPU",
+      suggestion: "Check for runaway processes or adjust resource limits.",
+      runbookUrl:
+        "https://runbooks.prometheus-operator.dev/runbooks/node/nodecpuusage",
+    },
+    {
+      code: "HOST_HIGH_MEM",
+      type: "HighMemory",
+      suggestion: "Monitor OOM kills and memory leak trends.",
+      runbookUrl:
+        "https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryusage",
+    },
+    {
+      code: "DB_SLOW_QUERY",
+      type: "SlowQueries",
+      suggestion: "Analyze query execution plans and index usage.",
+      runbookUrl:
+        "https://samber.github.io/awesome-prometheus-alerts/rules.html#postgresql",
+    },
+    {
+      code: "K8S_IMAGE_PULL",
+      type: "ImagePullBackOff",
+      suggestion: "Verify image registry credentials and image tag existence.",
+      runbookUrl:
+        "https://stackoverflow.com/questions/32507636/kubernetes-imagepullbackoff",
+    },
+  ],
+  info: [
+    {
+      code: "SYS_UPGRADE",
+      type: "VersionUpgradeAvailable",
+      suggestion: "Schedule maintenance window for node upgrade.",
+      runbookUrl:
+        "https://kubernetes.io/docs/tasks/administer-cluster/cluster-upgrade/",
+    },
+    {
+      code: "SEC_CERT_RENEW",
+      type: "CertificateRenewal",
+      suggestion: "Verify automated cert-manager rotation.",
+      runbookUrl: "https://cert-manager.io/docs/troubleshooting/",
+    },
+    {
+      code: "OPS_BACKUP",
+      type: "BackupComplete",
+      suggestion: "Audit backup size and integrity.",
+      runbookUrl: "https://velero.io/docs/v1.9/troubleshooting/",
+    },
+  ],
 };
 
 const HEALTHY_MSGS = [
@@ -56,11 +146,6 @@ const CRITICAL_MSGS = [
   "OOMKilled",
   "Pod scheduling failed",
 ];
-const ALERT_TYPES = {
-  critical: ["NodeNotReady", "CrashLoopBackOff", "NetworkPartition", "PVCLost"],
-  warning: ["HighCPU", "HighMemory", "SlowQueries", "ImagePullBackOff"],
-  info: ["VersionUpgradeAvailable", "CertificateRenewal", "BackupComplete"],
-};
 
 // --- Helpers ---
 const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -90,21 +175,39 @@ function generateStrictLog(state) {
   };
 }
 
-function generateStrictAlert(id, state) {
+function generateStrictAlert(resourceId, state) {
+  // 1. Pick a rich definition based on severity
+  const definition = rand(ALERT_DEFINITIONS[state]);
+
+  // 2. Random Metadata
+  const team = rand(TEAMS);
+  const region = rand(REGIONS);
+
   return JSON.stringify({
     kind: "alert:dispatch",
-    resourceId: id,
-    id: `alert-${crypto.randomUUID()}`,
-    message: `${rand(ALERT_TYPES[state])}: Detected on ${id}`,
+    resourceId: resourceId,
+    id: `alert-${crypto.randomUUID()}`, // The Event ID
+
+    // Core Data
+    message: `${definition.type}: Detected on ${resourceId}`,
     priority: SEVERITY_MAP[state],
     severity: state,
+
+    // Enrichment (The SRE Stuff)
+    code: definition.code,
+    origin: "cloud-command-agent",
+    suggestion: definition.suggestion,
+    runbookUrl: definition.runbookUrl,
+    labels: {
+      team,
+      region,
+      environment: "production",
+      app: "cloud-console",
+    },
   });
 }
 
 const createLogPayload = (id, state) => {
-  // Critical = spammy (5-10 logs)
-  // Warning = moderate (2-4 logs)
-  // Info = quiet (1 log)
   let batchSize = 1;
   if (state === "critical") batchSize = randInt(5, 10);
   else if (state === "warning") batchSize = randInt(2, 4);
@@ -128,7 +231,6 @@ wss.on("connection", (ws) => {
   console.log("CLIENT CONNECTED");
 
   let loop = null;
-  // Partitioned Arrays for O(1) Access
   let buckets = {
     critical: [],
     warning: [],
@@ -143,20 +245,14 @@ wss.on("connection", (ws) => {
         const allIds = data.ids;
         console.log(`Subscribed: ${allIds.length} nodes`);
 
-        // 1. Shuffle to ensure random distribution
+        // Partitioning
         const shuffled = [...allIds].sort(() => 0.5 - Math.random());
-
-        // 2. Partition IDs into explicit buckets
         const cCount = Math.floor(allIds.length * CRITICAL_PCT);
         const wCount = Math.floor(allIds.length * WARNING_PCT);
 
         buckets.critical = shuffled.slice(0, cCount);
         buckets.warning = shuffled.slice(cCount, cCount + wCount);
         buckets.info = shuffled.slice(cCount + wCount);
-
-        console.log(
-          `Partitioned: ${buckets.critical.length} Critical, ${buckets.warning.length} Warning, ${buckets.info.length} Healthy.`,
-        );
 
         if (loop) clearInterval(loop);
         loop = setInterval(() => firehose(ws, buckets), TICK_RATE_MS);
@@ -176,8 +272,6 @@ function firehose(ws, buckets) {
   if (ws.readyState !== 1) return;
 
   for (let i = 0; i < MSGS_PER_TICK; i++) {
-    // 1. Select Bucket based on Probability
-    // We explicitly bias the random roll to hit Critical/Warning buckets more often
     const trafficRoll = Math.random();
     let targetId, state;
 
@@ -195,7 +289,6 @@ function firehose(ws, buckets) {
       state = "info";
     }
 
-    // 2. Select Event Type
     const typeRoll = Math.random();
     let payload;
 
@@ -211,4 +304,4 @@ function firehose(ws, buckets) {
   }
 }
 
-console.log(`Distribution-Fixed Mock Server running on port ${PORT}`);
+console.log(`Enriched Mock Server running on port ${PORT}`);
