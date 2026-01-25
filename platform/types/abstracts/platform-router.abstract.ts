@@ -5,6 +5,11 @@ import type {
   RouterEvents,
 } from "@platform-types/interfaces/platform-router.interface";
 import Emitter from "@platform-structs/emitter.struct";
+
+// 1. Import the Schema and the Validator
+import { SerializableSchema } from "@platform-types/interfaces/serializable.interface";
+import { Value } from "@sinclair/typebox/value";
+
 abstract class PlatformRouter<
   X extends Record<string, any> = {},
 > implements PlatformRouterTemplate {
@@ -72,20 +77,29 @@ abstract class PlatformRouter<
   }
 
   private sanitize(path: string) {
-    // 1. Validation: Ensure we aren't getting absolute URLs
     if (path.startsWith("http")) {
       throw new Error("PlatformRouter: accepts only relative paths.");
     }
-
-    // 2. Normalization: Ensure leading slash for safety
     const fragment = path.startsWith("/") ? path : `/${path}`;
-
-    // 3. Construction
     return `${this.PLATFORM_ROOT}${fragment}`;
   }
 
+  // -----------------------------------------------------------------------
+  // RUNTIME VALIDATION
+  // -----------------------------------------------------------------------
+
   protected replace(url: string, state: RouteState | null): void {
     try {
+      // 2. Validate before calling Browser API
+      if (state && !Value.Check(SerializableSchema, state)) {
+        console.error("Router Fault: Invalid State", [
+          ...Value.Errors(SerializableSchema, state),
+        ]);
+        throw new Error(
+          `${[...Value.Errors(SerializableSchema, state)]?.join(",")}`,
+        );
+      }
+
       window?.history?.replaceState(state, "", this.sanitize(url));
       const routeState = state ?? ({} as RouteState);
       this.emitState(routeState, "REPLACE");
@@ -93,8 +107,19 @@ abstract class PlatformRouter<
       console.error(error);
     }
   }
+
   protected push(url: string, state: RouteState | null): void {
     try {
+      // 3. Validate before calling Browser API
+      if (state && !Value.Check(SerializableSchema, state)) {
+        console.error("Router Fault: Invalid State", [
+          ...Value.Errors(SerializableSchema, state),
+        ]);
+        throw new Error(
+          `${[...Value.Errors(SerializableSchema, state)]?.join(",")}`,
+        );
+      }
+
       window?.history?.pushState(state, "", this.sanitize(url));
       const routeState = state ?? ({} as RouteState);
       this.emitState(routeState, "PUSH");

@@ -16,6 +16,7 @@
     "ws": "^8.19.0"
   },
   "dependencies": {
+    "@sinclair/typebox": "^0.34.48",
     "glob": "^13.0.0",
     "json-schema-to-zod": "^2.7.0",
     "ts-json-schema-generator": "^2.4.0",
