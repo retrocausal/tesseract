@@ -1,10 +1,9 @@
 import PlatformRouter from "@platform/types/abstracts/platform-router.abstract";
 import {
   type AppRouteEvents,
-  type StaticResolverMap,
-  type AppRouterStatic,
+  type Resolvers,
   type Resolver,
-  type GREPPEDINFO,
+  type GreppedInfo,
 } from "@cloud-types/router.types";
 import type { RouterEvents } from "@platform/types/interfaces/platform-router.interface";
 import type { Listener } from "@platform/types/interfaces/emitter.interface";
@@ -13,20 +12,15 @@ import CLOUD_CONSOLE_ROUTE_CONSTANTS, {
 } from "@cloud-constants/router.const";
 import type { NavMap, RouteIdentifier } from "@cloud-types/router.types";
 
-function StaticImplements<I>() {
-  return (_constructor: I) => {};
-}
-
-@StaticImplements<AppRouterStatic>()
 class AppRouter extends PlatformRouter<AppRouteEvents> {
-  private URI_CHANGE_SUBSCRIBERS: StaticResolverMap = new Map();
+  private URI_CHANGE_SUBSCRIBERS: Resolvers = new Map();
 
   protected onRouteChange(payload: RouterEvents[keyof RouterEvents]): void {
     const path = this.path;
     const splitter = CLOUD_CONSOLE_ROUTE_CONSTANTS.APP_BASE;
     const relativePath = path?.split(splitter as string)?.pop();
     const { query, type, state } = payload;
-    const routeCaptures: GREPPEDINFO[] = new Array();
+    const routeCaptures: GreppedInfo[] = new Array();
 
     Object.keys(CLOUD_CONSOLE_ROUTES).forEach((key) => {
       const id = key as RouteIdentifier;

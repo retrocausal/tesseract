@@ -1,4 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
 // --------------------------------------------------------------------------
@@ -23,7 +23,7 @@ export type SerializableValue =
   | BrowserPrimitive
   | SerializableValue[]
   | { [key: string]: SerializableValue }
-  | Map<SerializableValue, SerializableValue> // <--- Strictly Typed
+  | Map<SerializableValue, SerializableValue> //  Strictly Typed
   | Set<SerializableValue>;
 
 export type Serializable = { [key: string]: SerializableValue };
@@ -33,8 +33,6 @@ export type Serializable = { [key: string]: SerializableValue };
 // --------------------------------------------------------------------------
 
 // A. JSON Schema (Standard)
-// We cast to 'any' here to allow TypeBox to compile the recursive inference
-// without circular type errors, while we rely on the explicit types above.
 export const JSONValueSchema: any = Type.Recursive((Self) =>
   Type.Union([
     Type.String(),

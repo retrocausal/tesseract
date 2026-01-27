@@ -1,4 +1,5 @@
-import type { NavItem as FlatNode } from "@cloud-types/sidebar";
+// FIX: Import from the new Strict Contract
+import type { NavItem } from "@cloud-types/sidebar.types";
 
 // --- Configuration ---
 // Scale: 5 Regions * 5 Zones * 25 Clusters * 25 Pods = ~16,000 Nodes
@@ -12,23 +13,25 @@ const CONFIG = {
 /**
  * Simulates a Database Dump or API Response.
  * Returns a massive, flat, unordered array of infrastructure nodes.
+ * * POLICY: All nodes start as "active".
+ * Degradation is strictly event-driven via the Socket.
  */
-export const fetchInfrastructureNav = (): Promise<FlatNode[]> => {
+export const fetchInfrastructureNav = (): Promise<NavItem[]> => {
   return new Promise((resolve) => {
     console.log("MockDB: Generating 16k+ nodes...");
 
     // Simulate Network Latency (300ms)
     setTimeout(() => {
-      const dataset: FlatNode[] = [];
+      const dataset: NavItem[] = [];
       let podCounter = 0;
 
       // 1. Root Node
       dataset.push({
-        id: "cloud-root",
-        parentId: null,
         kind: "cloud",
+        id: "cloud-root",
         name: "Global Infrastructure",
-        status: "active",
+        status: "active", // <--- Clean State
+        parentId: null,
         meta: {},
       });
 
@@ -36,33 +39,33 @@ export const fetchInfrastructureNav = (): Promise<FlatNode[]> => {
       for (let r = 1; r <= CONFIG.regions; r++) {
         const rId = `region-${r}`;
         dataset.push({
-          id: rId,
-          parentId: "cloud-root",
           kind: "region",
+          id: rId,
           name: `US-East-${r}`,
           status: "active",
+          parentId: "cloud-root",
           meta: {},
         });
 
         for (let z = 1; z <= CONFIG.zonesPerRegion; z++) {
           const zId = `${rId}-zone-${z}`;
           dataset.push({
-            id: zId,
-            parentId: rId,
             kind: "zone",
+            id: zId,
             name: `Zone ${z}`,
-            status: Math.random() > 0.9 ? "degraded" : "active",
+            status: "active",
+            parentId: rId,
             meta: {},
           });
 
           for (let c = 1; c <= CONFIG.clustersPerZone; c++) {
             const cId = `${zId}-cluster-${c}`;
             dataset.push({
-              id: cId,
-              parentId: zId,
               kind: "cluster",
+              id: cId,
               name: `K8s-Cluster-${c}`,
-              status: Math.random() > 0.85 ? "degraded" : "active",
+              status: "active",
+              parentId: zId,
               meta: { ip: `10.0.${r}.${c}` },
             });
 
@@ -70,12 +73,13 @@ export const fetchInfrastructureNav = (): Promise<FlatNode[]> => {
               podCounter++;
               const pId = `${cId}-pod-${p}`;
               dataset.push({
-                id: pId,
-                parentId: cId,
                 kind: "pod",
+                id: pId,
                 name: `pod-${podCounter.toString(16)}`,
-                status: Math.random() > 0.95 ? "offline" : "active",
+                status: "active",
+                parentId: cId,
                 meta: {
+                  // We can keep static meta, but status remains active
                   cpu: Math.floor(Math.random() * 100),
                   ram: Math.floor(Math.random() * 1024),
                 },
@@ -87,7 +91,6 @@ export const fetchInfrastructureNav = (): Promise<FlatNode[]> => {
 
       // 3. CHAOS SHUFFLE (Fisher-Yates)
       // We purposefully scramble the array so children might appear before parents.
-      // This forces the N-Ary Tree to handle non-topological ingestion.
       let currentIndex = dataset.length,
         randomIndex;
       while (currentIndex != 0) {
