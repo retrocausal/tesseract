@@ -1,4 +1,4 @@
-import { CloudConsole } from "@schema";
+import { CloudConsole } from "@tesseract/schema";
 import "@cloud-modules/alerts-panel/styles/index.css";
 export default function render(
   alerts: CloudConsole.Alert[],

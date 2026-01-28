@@ -1,4 +1,4 @@
-import { CloudConsole } from "@schema";
+import { CloudConsole } from "@tesseract/schema";
 import render from "@cloud/modules/alerts-panel/view";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 

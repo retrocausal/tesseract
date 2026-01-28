@@ -1,12 +1,12 @@
-import PlatformRouter from "@platform/types/abstracts/platform-router.abstract";
+import PlatformRouter from "@tesseract/platform/types/abstracts/platform-router.abstract";
 import {
   type AppRouteEvents,
   type Resolvers,
   type Resolver,
   type GreppedInfo,
 } from "@cloud-types/router.types";
-import type { RouterEvents } from "@platform/types/interfaces/platform-router.interface";
-import type { Listener } from "@platform/types/interfaces/emitter.interface";
+import type { RouterEvents } from "@tesseract/platform/types/interfaces/platform-router.interface";
+import type { Listener } from "@tesseract/platform/types/interfaces/emitter.interface";
 import CLOUD_CONSOLE_ROUTE_CONSTANTS, {
   CLOUD_CONSOLE_ROUTES,
 } from "@cloud-constants/router.const";

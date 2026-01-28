@@ -1,8 +1,8 @@
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
-import { default as Heap } from "@platform/structures/heap.struct";
+import { default as Heap } from "@tesseract/platform/structures/heap.struct";
 import render from "@cloud-modules/alerts-panel/view";
-import type { ComparatorFn } from "@platform/types/interfaces/heap.interface";
-import { CloudConsole } from "@schema";
+import type { ComparatorFn } from "@tesseract/platform/types/interfaces/heap.interface";
+import { CloudConsole } from "@tesseract/schema";
 import {
   onClick,
   onMouseEnter,

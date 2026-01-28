@@ -1,6 +1,6 @@
 import CONFIG from "@cloud-modules/alerts-panel/config";
-import type GenericHeap from "@platform/types/interfaces/heap.interface";
-import { CloudConsole } from "@schema";
+import type GenericHeap from "@tesseract/platform/types/interfaces/heap.interface";
+import { CloudConsole } from "@tesseract/schema";
 
 const { LIMIT, BUFFER } = CONFIG;
 

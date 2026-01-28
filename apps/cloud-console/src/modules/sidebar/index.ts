@@ -1,6 +1,6 @@
 import mockRandomUpdates from "@cloud-mocks/socket";
-import type { default as N_Ary } from "@platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@schema";
+import type { default as N_Ary } from "@tesseract/platform/types/interfaces/n-ary.interface";
+import { CloudConsole } from "@tesseract/schema";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { render } from "@cloud-modules/sidebar/view";
 import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
@@ -51,7 +51,7 @@ async function initNav(
 }
 
 async function bootstrap(arg: CloudConsole.Scaffolder) {
-  return import("@platform/structures/n-ary.struct")
+  return import("@tesseract/platform/structures/n-ary.struct")
     .then((module) => module.default)
     .then((NaryTree) => ({
       tree: NaryTree?.from(arg?.data),

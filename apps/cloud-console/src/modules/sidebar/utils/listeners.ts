@@ -6,8 +6,8 @@ import {
   setSelected,
 } from "@cloud-modules/sidebar/view";
 import AppRouter from "@cloud-router/index";
-import N_Ary from "@platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@schema";
+import N_Ary from "@tesseract/platform/types/interfaces/n-ary.interface";
+import { CloudConsole } from "@tesseract/schema";
 
 export function onclick(e: Event) {
   e.stopPropagation();

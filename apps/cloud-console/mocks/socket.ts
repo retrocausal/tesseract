@@ -1,5 +1,5 @@
-import type N_Ary from "@platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@schema";
+import type N_Ary from "@tesseract/platform/types/interfaces/n-ary.interface";
+import { CloudConsole } from "@tesseract/schema";
 
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 

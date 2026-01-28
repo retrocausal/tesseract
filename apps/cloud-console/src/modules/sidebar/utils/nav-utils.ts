@@ -1,5 +1,5 @@
-import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@schema";
+import type { N_ary_Node } from "@tesseract/platform/types/interfaces/n-ary.interface";
+import { CloudConsole } from "@tesseract/schema";
 
 const STATUS_SEV_INDICES = ["active", "booting", "degraded", "offline"];
 
