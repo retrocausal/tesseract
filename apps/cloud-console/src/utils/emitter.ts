@@ -1,6 +1,6 @@
 import Emitter from "@platform/structures/emitter.struct";
-import { EmitterEventMap } from "@cloud-types/emitter.types";
+import { CloudConsole } from "@schema";
 
-const CloudConsoleBus = new Emitter<EmitterEventMap>();
+const CloudConsoleBus = new Emitter<CloudConsole.EmitterEventMap>();
 
 export default CloudConsoleBus;

@@ -1,5 +1,5 @@
 import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud-types/sidebar.types";
+import { CloudConsole } from "@schema";
 
 import "@cloud-modules/sidebar/styles/index.css";
 
@@ -17,11 +17,11 @@ export const setStatusClass = (el: HTMLElement, status: string | undefined) => {
 };
 
 export function render(
-  node: N_ary_Node<NavItem>,
+  node: N_ary_Node<CloudConsole.NavItem>,
   state: Set<string>,
   innerHTML: boolean = false,
 ): HTMLElement {
-  const build = (node: N_ary_Node<NavItem>) => {
+  const build = (node: N_ary_Node<CloudConsole.NavItem>) => {
     const { children, value, id } = node;
     const { name, status } = value;
     const li = document.createElement("li");
@@ -69,7 +69,7 @@ export function getTargets(e: unknown): (Element | null | undefined)[] {
 }
 
 export function rebuild(
-  node: N_ary_Node<NavItem>,
+  node: N_ary_Node<CloudConsole.NavItem>,
   state: Set<string>,
   target?: HTMLElement,
   parent?: HTMLElement,

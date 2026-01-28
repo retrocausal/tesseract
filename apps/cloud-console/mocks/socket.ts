@@ -1,12 +1,11 @@
 import type N_Ary from "@platform/types/interfaces/n-ary.interface";
-import type { NavItem } from "@cloud-types/sidebar.types";
-import { type Dispatch } from "@cloud-types/emitter.types";
+import { CloudConsole } from "@schema";
 
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 
 export default function websocketProvider(
-  tree: N_Ary<NavItem> | undefined,
-): N_Ary<NavItem> | undefined {
+  tree: N_Ary<CloudConsole.NavItem> | undefined,
+): N_Ary<CloudConsole.NavItem> | undefined {
   const socket = new WebSocket("ws://localhost:17000");
 
   if (tree) {
@@ -27,7 +26,7 @@ export default function websocketProvider(
     socket.onmessage = (event) => {
       try {
         // 1. Safe Cast: We assert this matches one of our 3 strict shapes
-        const data = JSON.parse(event.data) as Dispatch;
+        const data = JSON.parse(event.data) as CloudConsole.Dispatch;
 
         // 2. Discriminated Union Switch
         // TS knows exactly which properties exist in each case block.

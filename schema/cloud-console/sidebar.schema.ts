@@ -1,7 +1,7 @@
 import { Type, type Static, type TSchema } from "@sinclair/typebox";
 import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
 import type { default as N_ary } from "@platform/types/interfaces/n-ary.interface";
-import type { Resolver, Subscriber } from "@cloud-types/router.types";
+import type { Resolver, Subscriber } from "@schema/cloud-console/router.schema";
 
 type Implements<T, U extends T> = U;
 

@@ -1,9 +1,8 @@
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { default as Heap } from "@platform/structures/heap.struct";
-import type { Alert, AlertPanelState } from "@cloud-types/alerts.types";
 import render from "@cloud-modules/alerts-panel/view";
-import { ComparatorFn } from "@platform/types/interfaces/heap";
-import { AlertScaffolding } from "@cloud-types/alerts.types";
+import type { ComparatorFn } from "@platform/types/interfaces/heap.interface";
+import { CloudConsole } from "@schema";
 import {
   onClick,
   onMouseEnter,
@@ -14,7 +13,7 @@ import { buildFrame, currentTime } from "@cloud/modules/alerts-panel/utils";
 
 const { TIMEINTERVAL } = CONFIG;
 
-function subscribe(heap: Heap<Alert>) {
+function subscribe(heap: Heap<CloudConsole.Alert>) {
   return EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
     const { id, priority, message, resourceId, severity } = payload;
     heap.add({
@@ -28,18 +27,21 @@ function subscribe(heap: Heap<Alert>) {
   });
 }
 
-function attachListeners(state: AlertPanelState, root: HTMLUListElement) {
+function attachListeners(
+  state: CloudConsole.AlertPanelState,
+  root: HTMLUListElement,
+) {
   root.onmouseenter = onMouseEnter;
   root.onmouseleave = onMouseLeave;
   root.onclick = (e) => onClick(e, root, state);
 }
 
-function initPanel(scaffold: AlertScaffolding) {
+function initPanel(scaffold: CloudConsole.AlertScaffolding) {
   attachListeners(scaffold.state, scaffold.root);
   subscribe(scaffold.heap);
 }
 
-async function run(scaffold: AlertScaffolding) {
+async function run(scaffold: CloudConsole.AlertScaffolding) {
   const { state, root, heap } = scaffold;
   const paint = () => {
     const now = performance.now();
@@ -58,12 +60,14 @@ async function run(scaffold: AlertScaffolding) {
   requestAnimationFrame(paint);
 }
 
-async function bootstrap(root: HTMLUListElement): Promise<AlertScaffolding> {
-  const AlertStream: Alert[] = new Array();
-  const Comparator: ComparatorFn<Alert> = (a, b) =>
+async function bootstrap(
+  root: HTMLUListElement,
+): Promise<CloudConsole.AlertScaffolding> {
+  const AlertStream: CloudConsole.Alert[] = new Array();
+  const Comparator: ComparatorFn<CloudConsole.Alert> = (a, b) =>
     (b?.priority || 0) - (a?.priority || 0);
-  const MaxHeap = new Heap<Alert>(Comparator);
-  const state: AlertPanelState = {
+  const MaxHeap = new Heap<CloudConsole.Alert>(Comparator);
+  const state: CloudConsole.AlertPanelState = {
     stream: AlertStream,
     lastRender: null,
     focussedAlert: null,

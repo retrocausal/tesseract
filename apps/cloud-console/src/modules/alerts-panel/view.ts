@@ -1,7 +1,7 @@
-import type { Alert } from "@cloud-types/alerts.types";
+import { CloudConsole } from "@schema";
 import "@cloud-modules/alerts-panel/styles/index.css";
 export default function render(
-  alerts: Alert[],
+  alerts: CloudConsole.Alert[],
   root: HTMLUListElement,
   focusedAlert?: string | null,
 ): void {

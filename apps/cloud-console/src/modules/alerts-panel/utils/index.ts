@@ -1,6 +1,6 @@
 import CONFIG from "@cloud-modules/alerts-panel/config";
-import type GenericHeap from "@platform/types/interfaces/heap";
-import { type Alert } from "@cloud-types/alerts.types";
+import type GenericHeap from "@platform/types/interfaces/heap.interface";
+import { CloudConsole } from "@schema";
 
 const { LIMIT, BUFFER } = CONFIG;
 
@@ -18,8 +18,8 @@ export function currentTime(): string {
 }
 
 export function buildFrame(
-  struct: GenericHeap<Alert>,
-  currentState: Alert[],
+  struct: GenericHeap<CloudConsole.Alert>,
+  currentState: CloudConsole.Alert[],
 ): void {
   const state = currentState;
   if (state.length < LIMIT) {

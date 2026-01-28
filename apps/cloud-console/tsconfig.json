@@ -7,19 +7,17 @@
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationMap": true,
-    "outDir": "dist-types",
-
     "allowImportingTsExtensions": false,
     "baseUrl": ".",
     "paths": {
       /* 1. MISSING LINK: Map the shared library alias */
-      "@platform/*": ["../../platform/*"],
+      "@tesseract/platform/*": ["../../platform/*"],
+      "@tesseract/schema": ["../../schema/index.ts"],
 
       /* Local Mappings */
       "@cloud/*": ["src/*"],
       "@cloud-utils/*": ["src/utils/*"],
       "@cloud-modules/*": ["src/modules/*"],
-      "@cloud-types/*": ["types/*"],
       "@cloud-mocks/*": ["mocks/*"],
       "@cloud-router/*": ["router/*"],
       "@cloud-constants/*": ["constants/*"]
@@ -28,5 +26,5 @@
   },
   "include": ["src", "types", "mocks", "router", "constants", "vite.config.ts"],
   /* Explicitly depend on the platform project */
-  "references": [{ "path": "../../platform" }]
+  "references": [{ "path": "../../platform" }, { "path": "../../schema" }]
 }

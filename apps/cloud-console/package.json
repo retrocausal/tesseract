@@ -1,0 +1,20 @@
+{
+  "name": "@tesseract/cloud-console",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc -b && vite serve",
+    "build": "tsc -b && vite build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vite-tsconfig-paths": "^6.0.3"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.48",
+    "@tesseract/schema": "workspace:*"
+  }
+}

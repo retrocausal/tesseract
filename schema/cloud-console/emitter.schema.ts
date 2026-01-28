@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { AlertSchema } from "./alerts.types";
+import { AlertSchema } from "@schema/cloud-console/alerts.schema";
 
 // Alert Dispatch
 export const AlertDispatchSchema = Type.Intersect([

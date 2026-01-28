@@ -1,4 +1,4 @@
-import { type AlertPanelState } from "@cloud-types/alerts.types";
+import { CloudConsole } from "@schema";
 import render from "@cloud/modules/alerts-panel/view";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 
@@ -15,7 +15,7 @@ export function onMouseLeave(e: Event) {
 export function onClick(
   e: Event,
   alertList: HTMLUListElement,
-  state: AlertPanelState,
+  state: CloudConsole.AlertPanelState,
 ) {
   const target = e?.target;
   if (target instanceof HTMLElement) {

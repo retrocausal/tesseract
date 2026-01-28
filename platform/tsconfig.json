@@ -6,8 +6,8 @@
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationMap": true,
+    "allowImportingTsExtensions": false,
     "rootDir": ".",
-    "outDir": "../dist/platform",
     /* We don't need paths here, as it doesn't depend on apps */
     "baseUrl": ".",
     "paths": {

@@ -1,4 +1,3 @@
-import type { NavItem } from "@cloud-types/sidebar.types";
 import { toggleNavState as toggle } from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   getTargets,
@@ -7,15 +6,17 @@ import {
   setSelected,
 } from "@cloud-modules/sidebar/view";
 import AppRouter from "@cloud-router/index";
-import { ROUTE_KEYS } from "@cloud-types/router.types";
 import N_Ary from "@platform/types/interfaces/n-ary.interface";
+import { CloudConsole } from "@schema";
 
 export function onclick(e: Event) {
   e.stopPropagation();
   const [target] = getTargets(e);
   const id = target?.getAttribute("id");
   if (id)
-    AppRouter.navigate(ROUTE_KEYS.RESOURCE, { [ROUTE_KEYS.RESOURCE]: id });
+    AppRouter.navigate(CloudConsole.ROUTE_KEYS.RESOURCE, {
+      [CloudConsole.ROUTE_KEYS.RESOURCE]: id,
+    });
 }
 
 export function onStatusChange(e: unknown) {
@@ -30,7 +31,7 @@ export function onStatusChange(e: unknown) {
 
 export function hydrateStateFromURL(
   resourceID: string,
-  tree: N_Ary<NavItem>,
+  tree: N_Ary<CloudConsole.NavItem>,
   state: Set<string>,
 ) {
   if (resourceID) {
