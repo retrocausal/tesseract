@@ -1,0 +1,52 @@
+# -----------------------------------------------------------------------------
+# STAGE 1: Builder
+# -----------------------------------------------------------------------------
+FROM node:20-alpine AS builder
+
+# 1. SETUP ARGUMENTS
+ARG APP_ENV
+RUN test -n "$APP_ENV" || (echo "APP_ENV argument is missing" && false)
+
+WORKDIR /build
+
+# 2. COPY CONFIGS
+# Leverage cache for dependencies
+COPY package.json package-lock.json tsconfig.base.json tsconfig.json ./
+
+# 3. COPY SOURCE
+# Copy strictly what is needed for the graph
+COPY schema ./schema
+COPY platform ./platform
+COPY apps/cloud-console ./apps/cloud-console
+
+# 4. INSTALL (Strict)
+RUN npm ci
+
+# 5. EXPLICIT BUILD STEPS
+# Step A: Type Check (The Gatekeeper)
+RUN npx tsc -b apps/cloud-console
+
+# Step B: Bundle (The Artifact)
+# We enter the app directory so Vite picks up the local config
+WORKDIR /build/apps/cloud-console
+RUN npx vite build --mode $APP_ENV
+
+# -----------------------------------------------------------------------------
+# STAGE 2: Runtime
+# -----------------------------------------------------------------------------
+FROM nginx:alpine
+
+# 1. DEFINE THE STRUCTURE
+# We create the nested directory to match the URL path.
+WORKDIR /usr/share/nginx/html/apps/cloud-console
+
+# 2. EXTRACT ARTIFACTS
+# Source: /build/dist/cloud-console (from root dist folder as per vite.config.ts)
+# Dest: /usr/share/nginx/html/apps/cloud-console (Current WORKDIR)
+COPY --from=builder /build/dist/cloud-console .
+
+# 3. NGINX CONFIG
+COPY apps/cloud-console/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
