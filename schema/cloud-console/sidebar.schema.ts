@@ -1,7 +1,10 @@
 import { Type, type Static, type TSchema } from "@sinclair/typebox";
-import type { N_ary_Node } from "@platform/types/interfaces/n-ary.interface";
-import type { default as N_ary } from "@platform/types/interfaces/n-ary.interface";
-import type { Resolver, Subscriber } from "@schema/cloud-console/router.schema";
+import type { N_ary_Node } from "@tesseract/platform/types/interfaces/n-ary.interface";
+import type { default as N_ary } from "@tesseract/platform/types/interfaces/n-ary.interface";
+import type {
+  Resolver,
+  Subscriber,
+} from "@tesseract/schema/cloud-console/router.schema";
 
 type Implements<T, U extends T> = U;
 
@@ -9,9 +12,8 @@ type Implements<T, U extends T> = U;
 export const NavItemStatusSchema = Type.Union([
   Type.Literal("active"),
   Type.Literal("degraded"),
-  Type.Literal("maintenance"),
+  Type.Literal("booting"),
   Type.Literal("offline"),
-  Type.Literal("unknown"),
 ]);
 
 export const NavItemKindSchema = Type.Union([

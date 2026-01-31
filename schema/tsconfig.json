@@ -18,8 +18,8 @@
 
     // MAPPING
     "paths": {
-      "@platform/*": ["../platform/*"],
-      "@schema/*": ["./*"]
+      "@tesseract/platform/*": ["../platform/*"],
+      "@tesseract/schema/*": ["./*"]
     }
   },
   "include": ["**/*.ts"],

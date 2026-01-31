@@ -7,8 +7,8 @@ import {
 import type {
   RouteUpdateType,
   QP,
-} from "@platform/types/interfaces/platform-router.interface";
-import type { Serializable } from "@platform/types/interfaces/serializable.interface";
+} from "@tesseract/platform/types/interfaces/platform-router.interface";
+import type { Serializable } from "@tesseract/platform/types/interfaces/serializable.interface";
 
 // We define the keys ONCE. Everything else is generated from this.
 export const ROUTE_KEYS = {

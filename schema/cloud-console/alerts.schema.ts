@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import BinaryHeap from "@platform/structures/heap.struct"; // Import class for the Type
+import BinaryHeap from "@tesseract/platform/structures/heap.struct"; // Import class for the Type
 
 // --------------------------------------------------------------------------
 // 1. DATA SCHEMAS (Runtime Validatable)
