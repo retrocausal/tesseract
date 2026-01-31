@@ -14,13 +14,7 @@
     "allowImportingTsExtensions": false,
 
     // BASE URL is required for 'paths' to work
-    "baseUrl": ".",
-
-    // MAPPING
-    "paths": {
-      "@tesseract/platform/*": ["../platform/*"],
-      "@tesseract/schema/*": ["./*"]
-    }
+    "baseUrl": "."
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],

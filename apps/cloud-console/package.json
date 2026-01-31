@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.48",
-    "@tesseract/schema": "*"
+    "@tesseract/schema": "*",
+    "@tesseract/platform": "*"
   }
 }

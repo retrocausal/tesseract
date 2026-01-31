@@ -10,10 +10,6 @@
     "allowImportingTsExtensions": false,
     "baseUrl": ".",
     "paths": {
-      /* 1. MISSING LINK: Map the shared library alias */
-      "@tesseract/platform/*": ["../../platform/*"],
-      "@tesseract/schema": ["../../schema/index.ts"],
-
       /* Local Mappings */
       "@cloud/*": ["src/*"],
       "@cloud-utils/*": ["src/utils/*"],

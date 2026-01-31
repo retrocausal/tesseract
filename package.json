@@ -5,7 +5,8 @@
   "workspaces": [
     "apps/*",
     "schema",
-    "mock-server"
+    "mock-server",
+    "platform"
   ],
   "scripts": {
     "dev:cloud": "cd apps/cloud-console && npm run dev",
