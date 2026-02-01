@@ -1,6 +1,6 @@
-import { CloudConsole } from "@tesseract/schema";
 import render from "@cloud/modules/alerts-panel/view";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
+import type { AlertPanelState } from "@cloud-types/alerts.ui.types";
 
 export function onMouseEnter(e: Event) {
   const target = e?.target as HTMLElement;
@@ -15,7 +15,7 @@ export function onMouseLeave(e: Event) {
 export function onClick(
   e: Event,
   alertList: HTMLUListElement,
-  state: CloudConsole.AlertPanelState,
+  state: AlertPanelState,
 ) {
   const target = e?.target;
   if (target instanceof HTMLElement) {

@@ -2,7 +2,6 @@ import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { default as Heap } from "@tesseract/platform/structures/heap.struct";
 import render from "@cloud-modules/alerts-panel/view";
 import type { ComparatorFn } from "@tesseract/platform/types/interfaces/heap.interface";
-import { CloudConsole } from "@tesseract/schema";
 import {
   onClick,
   onMouseEnter,
@@ -10,10 +9,15 @@ import {
 } from "@cloud-modules/alerts-panel/utils/listeners";
 import CONFIG from "@cloud-modules/alerts-panel/config";
 import { buildFrame, currentTime } from "@cloud/modules/alerts-panel/utils";
+import {
+  type Alert,
+  type AlertPanelState,
+  type AlertScaffolding,
+} from "@cloud-types/alerts.ui.types";
 
 const { TIMEINTERVAL } = CONFIG;
 
-function subscribe(heap: Heap<CloudConsole.Alert>) {
+function subscribe(heap: Heap<Alert>) {
   return EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
     const { id, priority, message, resourceId, severity } = payload;
     heap.add({
@@ -27,21 +31,18 @@ function subscribe(heap: Heap<CloudConsole.Alert>) {
   });
 }
 
-function attachListeners(
-  state: CloudConsole.AlertPanelState,
-  root: HTMLUListElement,
-) {
+function attachListeners(state: AlertPanelState, root: HTMLUListElement) {
   root.onmouseenter = onMouseEnter;
   root.onmouseleave = onMouseLeave;
   root.onclick = (e) => onClick(e, root, state);
 }
 
-function initPanel(scaffold: CloudConsole.AlertScaffolding) {
+function initPanel(scaffold: AlertScaffolding) {
   attachListeners(scaffold.state, scaffold.root);
   subscribe(scaffold.heap);
 }
 
-async function run(scaffold: CloudConsole.AlertScaffolding) {
+async function run(scaffold: AlertScaffolding) {
   const { state, root, heap } = scaffold;
   const paint = () => {
     const now = performance.now();
@@ -60,14 +61,12 @@ async function run(scaffold: CloudConsole.AlertScaffolding) {
   requestAnimationFrame(paint);
 }
 
-async function bootstrap(
-  root: HTMLUListElement,
-): Promise<CloudConsole.AlertScaffolding> {
-  const AlertStream: CloudConsole.Alert[] = new Array();
-  const Comparator: ComparatorFn<CloudConsole.Alert> = (a, b) =>
+async function bootstrap(root: HTMLUListElement): Promise<AlertScaffolding> {
+  const AlertStream: Alert[] = new Array();
+  const Comparator: ComparatorFn<Alert> = (a, b) =>
     (b?.priority || 0) - (a?.priority || 0);
-  const MaxHeap = new Heap<CloudConsole.Alert>(Comparator);
-  const state: CloudConsole.AlertPanelState = {
+  const MaxHeap = new Heap<Alert>(Comparator);
+  const state: AlertPanelState = {
     stream: AlertStream,
     lastRender: null,
     focussedAlert: null,

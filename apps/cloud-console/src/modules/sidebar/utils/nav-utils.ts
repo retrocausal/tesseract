@@ -1,11 +1,12 @@
 import type { N_ary_Node } from "@tesseract/platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@tesseract/schema";
+import { type NavItem } from "@cloud-types/nav.ui.types";
+import { type StatusDispatch } from "@cloud-types/emitter.ui.types";
 
 const STATUS_SEV_INDICES = ["active", "booting", "degraded", "offline"];
 
 export const propagateState = (
-  payload: CloudConsole.StatusDispatch,
-  nodes: Map<string, N_ary_Node<CloudConsole.NavItem>>,
+  payload: StatusDispatch,
+  nodes: Map<string, N_ary_Node<NavItem>>,
 ) => {
   const { id, status } = payload;
   const propagatedUpdates: Map<string, string> = new Map();
@@ -13,15 +14,14 @@ export const propagateState = (
     const node = nodes.get(id);
     if (node) {
       let current: string | null | undefined = node.parentId;
-      const receivedState = status as CloudConsole.NavItem["status"];
+      const receivedState = status as NavItem["status"];
       node.value.status = receivedState;
       propagatedUpdates.set(id, receivedState);
       while (current) {
         const parent = nodes.get(current);
         if (parent) {
           const parentState =
-            parent.value?.status ||
-            ("active" as CloudConsole.NavItem["status"]);
+            parent.value?.status || ("active" as NavItem["status"]);
           let newParentState;
           if (
             STATUS_SEV_INDICES.indexOf(receivedState) >
@@ -45,8 +45,7 @@ export const propagateState = (
             }
           }
           if (parent && newParentState && newParentState !== parentState) {
-            parent.value.status =
-              newParentState as CloudConsole.NavItem["status"];
+            parent.value.status = newParentState as NavItem["status"];
             propagatedUpdates.set(current, newParentState);
           }
           current = parent?.parentId;

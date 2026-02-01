@@ -7,15 +7,16 @@ import {
 } from "@cloud-modules/sidebar/view";
 import AppRouter from "@cloud-router/index";
 import N_Ary from "@tesseract/platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@tesseract/schema";
+import { ConsoleSchema } from "@tesseract/schema";
+import { type NavItem } from "@cloud-types/nav.ui.types";
 
 export function onclick(e: Event) {
   e.stopPropagation();
   const [target] = getTargets(e);
   const id = target?.getAttribute("id");
   if (id)
-    AppRouter.navigate(CloudConsole.ROUTE_KEYS.RESOURCE, {
-      [CloudConsole.ROUTE_KEYS.RESOURCE]: id,
+    AppRouter.navigate(ConsoleSchema.ROUTE_KEYS.RESOURCE, {
+      [ConsoleSchema.ROUTE_KEYS.RESOURCE]: id,
     });
 }
 
@@ -31,7 +32,7 @@ export function onStatusChange(e: unknown) {
 
 export function hydrateStateFromURL(
   resourceID: string,
-  tree: N_Ary<CloudConsole.NavItem>,
+  tree: N_Ary<NavItem>,
   state: Set<string>,
 ) {
   if (resourceID) {

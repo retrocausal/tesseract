@@ -1,7 +1,7 @@
-import { CloudConsole } from "@tesseract/schema";
 import "@cloud-modules/alerts-panel/styles/index.css";
+import type { Alert } from "@cloud-types/alerts.ui.types";
 export default function render(
-  alerts: CloudConsole.Alert[],
+  alerts: Alert[],
   root: HTMLUListElement,
   focusedAlert?: string | null,
 ): void {

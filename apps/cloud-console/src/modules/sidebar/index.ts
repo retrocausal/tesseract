@@ -1,6 +1,6 @@
 import mockRandomUpdates from "@cloud-mocks/socket";
 import type { default as N_Ary } from "@tesseract/platform/types/interfaces/n-ary.interface";
-import { CloudConsole } from "@tesseract/schema";
+import { ConsoleSchema } from "@tesseract/schema";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { render } from "@cloud-modules/sidebar/view";
 import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
@@ -9,6 +9,17 @@ import {
   onStatusChange,
   hydrateStateFromURL,
 } from "@cloud-modules/sidebar/utils/listeners";
+import {
+  type NavItem,
+  type NavScaffolding,
+  type NavData,
+  type Scaffolder,
+  type RouterPlugs,
+} from "@cloud-types/nav.ui.types";
+import {
+  type RouteIdentifier,
+  type Resolver,
+} from "@cloud-types/router.ui.types";
 
 export const onStatusReception = "OnStatusChange";
 
@@ -23,7 +34,7 @@ function dispatchStatusUpdate(id: string, status: string) {
   }
 }
 
-function attachStateChangeListeners(tree: N_Ary<CloudConsole.NavItem>) {
+function attachStateChangeListeners(tree: N_Ary<NavItem>) {
   const { nodes } = tree;
   EventPubSubProvider.subscribe("status:update", (payload) => {
     const propagations = PropagateNAVState(payload, nodes);
@@ -33,9 +44,7 @@ function attachStateChangeListeners(tree: N_Ary<CloudConsole.NavItem>) {
   });
 }
 
-async function initNav(
-  arg: CloudConsole.NavScaffolding,
-): Promise<CloudConsole.NavData> {
+async function initNav(arg: NavScaffolding): Promise<NavData> {
   const { tree, container } = arg;
   let state: Set<string> | undefined,
     list = null;
@@ -50,7 +59,7 @@ async function initNav(
   return { state, tree, root: list };
 }
 
-async function bootstrap(arg: CloudConsole.Scaffolder) {
+async function bootstrap(arg: Scaffolder) {
   return import("@tesseract/platform/structures/n-ary.struct")
     .then((module) => module.default)
     .then((NaryTree) => ({
@@ -60,9 +69,9 @@ async function bootstrap(arg: CloudConsole.Scaffolder) {
     .then(initNav);
 }
 
-async function run(data: CloudConsole.NavData) {
+async function run(data: NavData) {
   const { state, tree, root } = data;
-  let onURIChange: CloudConsole.Resolver | undefined;
+  let onURIChange: Resolver | undefined;
   if (state && tree && root) {
     attachStateChangeListeners(tree);
     mockRandomUpdates(tree);
@@ -71,14 +80,12 @@ async function run(data: CloudConsole.NavData) {
   return { onURIChange };
 }
 
-async function subscribeToRouterUpdates<A extends CloudConsole.RouterPlugs>(
-  listenerMap: A,
-) {
+async function subscribeToRouterUpdates<A extends RouterPlugs>(listenerMap: A) {
   const { onURIChange, onRouteUpdate } = listenerMap;
   const module = await import("@cloud-router/index");
   const AppRouter = module?.default;
   if (onURIChange) {
-    const key: CloudConsole.RouteIdentifier = CloudConsole.ROUTE_KEYS.RESOURCE;
+    const key: RouteIdentifier = ConsoleSchema.ROUTE_KEYS.RESOURCE;
     AppRouter?.registerURIChangeListeners(onURIChange, key);
   }
   if (onRouteUpdate) {
@@ -86,7 +93,7 @@ async function subscribeToRouterUpdates<A extends CloudConsole.RouterPlugs>(
   }
 }
 
-export function onload(navInitializer: CloudConsole.Scaffolder) {
+export function onload(navInitializer: Scaffolder) {
   if (navInitializer) {
     return bootstrap(navInitializer)
       .then(run)

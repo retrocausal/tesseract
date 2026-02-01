@@ -1,6 +1,6 @@
 import CONFIG from "@cloud-modules/alerts-panel/config";
 import type GenericHeap from "@tesseract/platform/types/interfaces/heap.interface";
-import { CloudConsole } from "@tesseract/schema";
+import type { Alert } from "@cloud-types/alerts.ui.types";
 
 const { LIMIT, BUFFER } = CONFIG;
 
@@ -18,8 +18,8 @@ export function currentTime(): string {
 }
 
 export function buildFrame(
-  struct: GenericHeap<CloudConsole.Alert>,
-  currentState: CloudConsole.Alert[],
+  struct: GenericHeap<Alert>,
+  currentState: Alert[],
 ): void {
   const state = currentState;
   if (state.length < LIMIT) {

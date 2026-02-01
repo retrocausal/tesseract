@@ -1,5 +1,4 @@
-import { Type, type Static } from "@sinclair/typebox";
-import BinaryHeap from "@tesseract/platform/structures/heap.struct"; // Import class for the Type
+import { Type } from "@sinclair/typebox";
 
 // --------------------------------------------------------------------------
 // 1. DATA SCHEMAS (Runtime Validatable)
@@ -32,20 +31,3 @@ export const AlertPanelStateSchema = Type.Object({
   focussedAlert: Type.Union([Type.String(), Type.Null()]),
   lastRender: Type.Union([Type.Number(), Type.Null()]),
 });
-
-// --------------------------------------------------------------------------
-// 2. INFERRED TYPES
-// --------------------------------------------------------------------------
-
-export type Alert = Static<typeof AlertSchema>;
-export type AlertPanelState = Static<typeof AlertPanelStateSchema>;
-
-// --------------------------------------------------------------------------
-// 3. RUNTIME INTERFACES (DOM / Classes)
-// --------------------------------------------------------------------------
-
-export type AlertScaffolding = {
-  state: AlertPanelState;
-  heap: BinaryHeap<Alert>; // Uses the Inferred Alert Type
-  root: HTMLUListElement;
-};

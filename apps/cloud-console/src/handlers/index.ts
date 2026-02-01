@@ -5,7 +5,7 @@ import { fetchInfrastructureNav } from "@cloud-mocks/nav";
 import type {
   NavItem,
   Scaffolder as SidebarBootstrapper,
-} from "@cloud-types/sidebar";
+} from "@cloud-types/nav.ui.types";
 
 function bootstrapApp() {
   //sidebar

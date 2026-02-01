@@ -1,9 +1,5 @@
-import {
-  type Greppers,
-  ROUTE_KEYS,
-  type Routes,
-} from "@cloud-types/router.types";
-
+import { type Greppers, type Routes } from "@cloud-types/router.ui.types";
+import { ROUTE_KEYS } from "@tesseract/schema/cloud-console";
 export const CLOUD_CONSOLE_GREPPERS: Greppers = {
   [ROUTE_KEYS.RESOURCE]: /\/resource\/([a-zA-Z0-9_-]+)/i,
   [ROUTE_KEYS.ALERT]: /\/alert\/([a-zA-Z0-9_-]+)/i,

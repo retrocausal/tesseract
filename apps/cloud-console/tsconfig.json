@@ -16,11 +16,20 @@
       "@cloud-modules/*": ["src/modules/*"],
       "@cloud-mocks/*": ["mocks/*"],
       "@cloud-router/*": ["router/*"],
-      "@cloud-constants/*": ["constants/*"]
+      "@cloud-constants/*": ["constants/*"],
+      "@cloud-types/*": ["types/*"]
     },
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "types", "mocks", "router", "constants", "vite.config.ts"],
+  "include": [
+    "src",
+    "types",
+    "mocks",
+    "router",
+    "constants",
+    "types",
+    "vite.config.ts"
+  ],
   /* Explicitly depend on the platform project */
   "references": [{ "path": "../../platform" }, { "path": "../../schema" }]
 }

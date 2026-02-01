@@ -4,13 +4,14 @@ import {
   type Resolvers,
   type Resolver,
   type GreppedInfo,
-} from "@cloud-types/router.types";
+  type NavMap,
+  type RouteIdentifier,
+} from "@cloud-types/router.ui.types";
 import type { RouterEvents } from "@tesseract/platform/types/interfaces/platform-router.interface";
 import type { Listener } from "@tesseract/platform/types/interfaces/emitter.interface";
 import CLOUD_CONSOLE_ROUTE_CONSTANTS, {
   CLOUD_CONSOLE_ROUTES,
 } from "@cloud-constants/router.const";
-import type { NavMap, RouteIdentifier } from "@cloud-types/router.types";
 
 class AppRouter extends PlatformRouter<AppRouteEvents> {
   private URI_CHANGE_SUBSCRIBERS: Resolvers = new Map();
