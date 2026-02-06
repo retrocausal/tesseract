@@ -1,10 +1,5 @@
 import { toggleNavState as toggle } from "@cloud-modules/sidebar/utils/nav-utils";
-import {
-  getTargets,
-  rebuild,
-  setStatusClass,
-  setSelected,
-} from "@cloud-modules/sidebar/view";
+import { getTargets, rebuild, setSelected } from "@cloud-modules/sidebar/view";
 import AppRouter from "@cloud-router/index";
 import N_Ary from "@tesseract/platform/types/interfaces/n-ary.interface";
 import { ConsoleSchema } from "@tesseract/schema";
@@ -18,16 +13,6 @@ export function onclick(e: Event) {
     AppRouter.navigate(ConsoleSchema.ROUTE_KEYS.RESOURCE, {
       [ConsoleSchema.ROUTE_KEYS.RESOURCE]: id,
     });
-}
-
-export function onStatusChange(e: unknown) {
-  const event = e as CustomEvent;
-  const { detail } = event;
-  const { status } = detail;
-  const target = event.target;
-  if (target instanceof HTMLElement) {
-    if (status) setStatusClass(target, status);
-  }
 }
 
 export function hydrateStateFromURL(

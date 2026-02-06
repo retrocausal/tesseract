@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "composite": false,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@schema": ["schema/index"]
+    }
+  },
+  "references": [{ "path": "../schema" }, { "path": "../platform" }],
+  "include": ["src/**/*", "schema/**/*"]
+}

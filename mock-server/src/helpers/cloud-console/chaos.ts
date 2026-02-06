@@ -4,9 +4,13 @@
  */
 import { WebSocketServer, WebSocket } from "ws";
 import crypto from "node:crypto"; // Explicit import for safety
+import { Server } from "node:http";
+import { type Static } from "@sinclair/typebox";
+import { AddressInfo } from "net";
+import { ConsoleSchema } from "@tesseract/schema";
+type NavItem = Static<typeof ConsoleSchema.NavItemSchema>;
 
 const PORT = 17000;
-const wss = new WebSocketServer({ port: PORT });
 
 // --- 1. Tuning (The "Pulse") ---
 const TICK_RATE_MS = 200; // 5 updates per second (Visual smoothness)
@@ -222,68 +226,14 @@ const createStatusPayload = (
   return JSON.stringify({ kind: "status:update", id, status });
 };
 
-// --- Connection Handler ---
-
-wss.on("connection", (ws: WebSocket) => {
-  console.log("CLIENT CONNECTED");
-
-  let tickLoop: NodeJS.Timeout | null = null;
-  let driftLoop: NodeJS.Timeout | null = null;
-
-  // State Buckets
-  const buckets = {
-    critical: [] as string[],
-    warning: [] as string[],
-    info: [] as string[],
-  };
-
-  ws.on("message", (raw: string) => {
-    try {
-      const data = JSON.parse(raw);
-
-      if (data.ids && Array.isArray(data.ids)) {
-        const allIds: string[] = data.ids;
-        console.log(`Subscribed: ${allIds.length} nodes`);
-
-        // 1. Initial Partitioning
-        const shuffled = [...allIds].sort(() => 0.5 - Math.random());
-        const cCount = Math.floor(allIds.length * CRITICAL_PCT);
-        const wCount = Math.floor(allIds.length * WARNING_PCT);
-
-        buckets.critical = shuffled.slice(0, cCount);
-        buckets.warning = shuffled.slice(cCount, cCount + wCount);
-        buckets.info = shuffled.slice(cCount + wCount);
-
-        // 2. Start The Firehose
-        if (tickLoop) clearInterval(tickLoop);
-        tickLoop = setInterval(() => firehose(ws, buckets), TICK_RATE_MS);
-
-        // 3. Start The Drift (Simulate Healing/Breaking)
-        if (driftLoop) clearInterval(driftLoop);
-        driftLoop = setInterval(() => drift(buckets), DRIFT_RATE_MS);
-      }
-    } catch (e) {
-      console.error("Message error:", e);
-    }
-  });
-
-  ws.on("close", () => {
-    if (tickLoop) clearInterval(tickLoop);
-    if (driftLoop) clearInterval(driftLoop);
-    console.log("CLIENT DISCONNECTED");
-  });
-});
-
 /**
  * The Chaos Engine
  * Fires events based on bucket probability.
  */
 function firehose(
-  ws: WebSocket,
+  ws: WebSocketServer,
   buckets: { critical: string[]; warning: string[]; info: string[] },
 ) {
-  if (ws.readyState !== WebSocket.OPEN) return;
-
   for (let i = 0; i < MSGS_PER_TICK; i++) {
     const trafficRoll = Math.random();
     let targetId: string;
@@ -318,7 +268,9 @@ function firehose(
       payload = generateStrictAlert(targetId, state);
     }
 
-    ws.send(payload);
+    ws.clients.forEach((client) => {
+      client.send(payload);
+    });
   }
 }
 
@@ -356,4 +308,59 @@ function drift(buckets: {
   }
 }
 
-console.log(`Enriched Mock Server running on port ${PORT}`);
+// --- Connection Handler ---
+
+export function openSocket(server: Server, response: NavItem[]) {
+  const wss = new WebSocketServer({ server });
+  let tickLoop: NodeJS.Timeout | null = null;
+  let driftLoop: NodeJS.Timeout | null = null;
+
+  function broadcast() {
+    // State Buckets
+    const buckets = {
+      critical: [] as string[],
+      warning: [] as string[],
+      info: [] as string[],
+    };
+
+    try {
+      const accumulator: { ids: string[] } = {
+        ids: [],
+      };
+      const data = response.reduce((acc, current) => {
+        acc.ids.push(current.id);
+        return acc;
+      }, accumulator);
+      if (data.ids) {
+        const allIds: string[] = data.ids;
+        console.log(`Subscribed: ${allIds.length} nodes`);
+
+        // 1. Initial Partitioning
+        const shuffled = [...allIds].sort(() => 0.5 - Math.random());
+        const cCount = Math.floor(allIds.length * CRITICAL_PCT);
+        const wCount = Math.floor(allIds.length * WARNING_PCT);
+
+        buckets.critical = shuffled.slice(0, cCount);
+        buckets.warning = shuffled.slice(cCount, cCount + wCount);
+        buckets.info = shuffled.slice(cCount + wCount);
+
+        // 2. Start The Firehose
+        if (tickLoop) clearInterval(tickLoop);
+        tickLoop = setInterval(() => firehose(wss, buckets), TICK_RATE_MS);
+
+        // 3. Start The Drift (Simulate Healing/Breaking)
+        if (driftLoop) clearInterval(driftLoop);
+        driftLoop = setInterval(() => drift(buckets), DRIFT_RATE_MS);
+      }
+    } catch (e) {
+      console.error("Message error:", e);
+    }
+  }
+  broadcast();
+  wss.on("connection", (ws: WebSocket) => {
+    console.log("CLIENT CONNECTED");
+  });
+
+  const address = server.address() as AddressInfo;
+  console.log(`Enriched Mock Server running on port ${address?.port}`);
+}

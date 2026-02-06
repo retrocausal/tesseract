@@ -1,0 +1,45 @@
+# -----------------------------------------------------------------------------
+# STAGE 1: Builder
+# -----------------------------------------------------------------------------
+FROM node:20-alpine AS builder
+
+WORKDIR /usr/src/app
+
+# 1. COPY WORKSPACE CONFIGS (Root + Packages)
+# We need the root files to install hoisted dependencies (TypeScript, TypeBox)
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY mock-server/package.json ./mock-server/
+COPY schema/package.json ./schema/
+# Platform doesn't have a package.json, but it is part of the graph
+
+# 2. INSTALL DEPENDENCIES (Hoisted)
+# This installs dependencies at the root, linking workspaces
+RUN npm ci
+
+# 3. COPY SOURCE CODE
+COPY platform ./platform
+COPY schema ./schema
+COPY mock-server ./mock-server
+
+# 4. BUILD (Bundle with esbuild)
+# We run the build command defined in mock-server/package.json
+WORKDIR /usr/src/app/mock-server
+RUN npm run build
+
+# -----------------------------------------------------------------------------
+# STAGE 2: Runtime
+# -----------------------------------------------------------------------------
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 1. COPY ARTIFACT
+# The builder produced a single, bundled file: dist/index.js
+COPY --from=builder /usr/src/app/mock-server/dist/index.js ./index.js
+
+# 2. ENVIRONMENT DEFAULTS
+ENV PORT=3000
+EXPOSE 3000
+
+# 3. RUN
+CMD ["node", "index.js"]
