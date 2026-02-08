@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 package-lock.json
+
+#build - maps/types
+*.d.ts
+*.d.ts.map
+*.tsbuildinfo

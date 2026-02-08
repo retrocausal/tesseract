@@ -13,8 +13,8 @@ type NavItem = Static<typeof ConsoleSchema.NavItemSchema>;
 const PORT = 17000;
 
 // --- 1. Tuning (The "Pulse") ---
-const TICK_RATE_MS = 200; // 5 updates per second (Visual smoothness)
-const MSGS_PER_TICK = 50; // ~250 events/second total
+const TICK_RATE_MS = 500; // 2 updates per second (Visual smoothness)
+const MSGS_PER_TICK = 50; // ~100 events/second total
 
 const DRIFT_RATE_MS = 5000; // Every 5 seconds, the world changes slightly
 const DRIFT_AMOUNT = 5; // Number of nodes that change state per drift tick
@@ -362,5 +362,5 @@ export function openSocket(server: Server, response: NavItem[]) {
   });
 
   const address = server.address() as AddressInfo;
-  console.log(`Enriched Mock Server running on port ${address?.port}`);
+  console.log(`Mock Server running on port ${address?.port}`);
 }

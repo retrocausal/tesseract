@@ -3,8 +3,8 @@ import { openSocket } from "@/helpers/cloud-console/chaos";
 import { Server } from "node:http";
 import Store from "@/cache";
 
-function bootstrapInfra(server: Server) {
-  fetchInfrastructureNav()
+export function bootstrapInfra(server: Server) {
+  return fetchInfrastructureNav()
     .then((infra) => {
       //save infra
       if (Store["cloud-console"]) Store["cloud-console"].infra = infra;
@@ -13,8 +13,11 @@ function bootstrapInfra(server: Server) {
       if (httpServer) {
         openSocket(httpServer, infra);
       }
+      return infra;
     })
-    .catch((e) => {});
+    .catch((e) => {
+      console.error(e);
+    });
 }
 
 export default [bootstrapInfra];

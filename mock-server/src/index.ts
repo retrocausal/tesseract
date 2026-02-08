@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type ErrorRequestHandler } from "express";
 import ConsoleRouter from "@/routers/cloud-console";
 import BootStrappers from "@/bootstrappers";
 
@@ -20,6 +20,15 @@ const app = express();
 const env = process.env;
 
 app.use("/cloud", ConsoleRouter);
+
+const globalExceptionHandler: ErrorRequestHandler = (err, _req, res, next) => {
+  if (err instanceof Error && !res.headersSent) {
+    console.error(err);
+    res.status(500).end();
+  } else next(err);
+};
+
+app.use(globalExceptionHandler);
 
 const server = app.listen(env.port || 18000, () => {
   console.log(`listening on ${env.port || 18000}`);

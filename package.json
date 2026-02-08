@@ -9,6 +9,7 @@
     "platform"
   ],
   "scripts": {
+    "mock": "cd mock-server && npm run dev",
     "dev:cloud": "cd apps/cloud-console && npm run dev",
     "build:cloud": "cd apps/cloud-console && npm run build",
     "build:all": "npm run build --workspaces --if-present"
