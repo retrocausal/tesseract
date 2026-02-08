@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "tsc -b && vite serve",
+    "dev": "vite serve",
+    "check": "tsc -b",
     "build": "tsc -b && vite build"
   },
   "devDependencies": {

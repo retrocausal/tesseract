@@ -1,14 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "declaration": true,
-    "declarationMap": true,
-    "allowImportingTsExtensions": false,
+    "rootDir": ".",
     "baseUrl": ".",
+    "allowImportingTsExtensions": false,
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       /* Local Mappings */
       "@cloud/*": ["src/*"],
@@ -18,7 +15,7 @@
       "@cloud-constants/*": ["constants/*"],
       "@cloud-types/*": ["types/*"]
     },
-    "types": ["vite/client", "node"]
+    "types": ["vite/client"]
   },
   "include": ["src", "types", "router", "constants", "types", "vite.config.ts"],
   /* Explicitly depend on the platform project */
