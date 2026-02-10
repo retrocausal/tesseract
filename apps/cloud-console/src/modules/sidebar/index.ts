@@ -1,4 +1,3 @@
-import mockRandomUpdates from "@cloud-mocks/socket";
 import { ConsoleSchema } from "@tesseract/schema";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { render } from "@cloud-modules/sidebar/view";
@@ -75,7 +74,6 @@ async function run(data: NavData) {
   let onURIChange: Resolver | undefined;
   if (state && tree && root) {
     attachStateChangeListeners(tree);
-    mockRandomUpdates(tree);
     onURIChange = (id: string) => hydrateStateFromURL(id, tree, state);
   }
   return { onURIChange };

@@ -2,7 +2,7 @@ import { Router } from "express";
 import Store from "@/cache";
 import { bootstrapInfra } from "@/bootstrappers/cloud-console";
 const NavRouter = Router();
-NavRouter.get("/", (req, res, next) => {
+NavRouter.post("/", (req, res, next) => {
   const infra = Store["cloud-console"]?.infra || [];
   if (infra.length < 1) {
     bootstrapInfra(req?.app?.get("httpServer"))

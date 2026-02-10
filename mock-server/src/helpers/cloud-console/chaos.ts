@@ -311,7 +311,7 @@ function drift(buckets: {
 // --- Connection Handler ---
 
 export function openSocket(server: Server, response: NavItem[]) {
-  const wss = new WebSocketServer({ server });
+  const wss = new WebSocketServer({ server, path: "/cloud-console" });
   let tickLoop: NodeJS.Timeout | null = null;
   let driftLoop: NodeJS.Timeout | null = null;
 
