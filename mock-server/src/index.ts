@@ -37,4 +37,7 @@ const server = app.listen(env.port || 18000, () => {
     appBootStrappers.forEach((fn) => fn(server));
   });
 });
+server.on("upgrade", (req) => {
+  console.log("Socket upgrade request path:", req.url);
+});
 app.set("httpServer", server);
