@@ -3,7 +3,17 @@ import { type Dispatch } from "@cloud-types/emitter.ui.types";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 
 export default function registerClient() {
-  const socket = new WebSocket("wss://socket/mock/cloud-console");
+  // 1. Determine Protocol (Secure or Insecure)
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+  // 2. Get the Current Host (e.g., "tesseract.schrodingers.cat" or "localhost:5173")
+  const host = window.location.host;
+
+  // 3. Construct the Absolute URL
+  // Result: wss://tesseract.schrodingers.cat/socket/mock/cloud-console
+  const socket = new WebSocket(
+    `${protocol}//${host}/socket/mock/cloud-console`,
+  );
 
   socket.onopen = function () {};
 

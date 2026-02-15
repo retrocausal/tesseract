@@ -21,16 +21,16 @@ export function hydrateStateFromURL(
   state: Set<string>,
 ) {
   if (resourceID) {
-    if (state?.size > 0) {
+    if (state.size > 0) {
       toggle(resourceID, state);
-      const node = tree?.nodes?.get(resourceID);
+      const node = tree.nodes?.get(resourceID);
       node && rebuild(node, state);
     } else {
-      const lineage = tree?.lineage(resourceID);
+      const lineage = tree.lineage(resourceID);
       if (lineage) {
         for (let i = lineage.length - 1; i > -1; i--) {
           const resource = lineage[i];
-          state?.add(resource.id);
+          state.add(resource.id);
         }
         if (tree.root) {
           rebuild(tree.root, state);

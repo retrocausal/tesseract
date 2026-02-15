@@ -6,7 +6,10 @@ import {
   onclick,
   hydrateStateFromURL,
 } from "@cloud-modules/sidebar/utils/listeners";
-import { propagateState as PropagateNAVState } from "@cloud-modules/sidebar/utils/nav-utils";
+import {
+  propagateState as PropagateNAVState,
+  harmonize,
+} from "@cloud-modules/sidebar/utils/nav-utils";
 import {
   type NavScaffolding,
   type NavData,
@@ -38,8 +41,8 @@ async function bootstrap(arg: Scaffolder) {
   return import("@tesseract/platform/structures/n-ary.struct")
     .then((module) => module.default)
     .then((NaryTree) => ({
-      tree: NaryTree?.from(arg?.data),
-      container: arg?.container,
+      tree: harmonize(NaryTree.from(arg.data)),
+      container: arg.container,
     }))
     .then(initNav);
 }
