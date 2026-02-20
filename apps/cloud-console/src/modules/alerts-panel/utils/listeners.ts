@@ -1,6 +1,7 @@
 import render from "@cloud/modules/alerts-panel/view";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import type { AlertPanelState } from "@cloud-types/alerts.ui.types";
+import { currentTime } from "@cloud/modules/alerts-panel/utils";
 
 export function onMouseEnter(e: Event) {
   const target = e?.target as HTMLElement;
@@ -32,6 +33,7 @@ export function onClick(
         if (dispatchable >= 0)
           EventPubSubProvider.emit("focused:alert", {
             ...state.stream[dispatchable],
+            time: state.stream[dispatchable].time || currentTime(),
           });
       }
     }

@@ -35,3 +35,9 @@ export const FocusedAlertDispatchSchema = Type.Intersect([
     time: Type.String(),
   }),
 ]);
+
+export const GenericDispatchSchema = Type.Union([
+  StatusDispatchSchema,
+  AlertDispatchSchema,
+  LogDispatchSchema,
+]);

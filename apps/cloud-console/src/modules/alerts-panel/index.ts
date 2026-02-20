@@ -18,17 +18,9 @@ import {
 const { TIMEINTERVAL } = CONFIG;
 
 function subscribe(heap: Heap<Alert>) {
-  return EventPubSubProvider.subscribe("alert:dispatch", (payload) => {
-    const { id, priority, message, resourceId, severity } = payload;
-    heap.add({
-      priority,
-      message,
-      id,
-      resourceId,
-      severity,
-      time: currentTime(),
-    });
-  });
+  return EventPubSubProvider.subscribe("alert:dispatch", (payload) =>
+    heap.add({ ...payload, time: currentTime() }),
+  );
 }
 
 function attachListeners(state: AlertPanelState, root: HTMLUListElement) {

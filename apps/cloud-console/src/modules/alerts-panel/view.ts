@@ -17,8 +17,10 @@ export default function render(
       li.className = "item";
       li.append(alertHead);
       const timestamp = document.createElement("span");
-      timestamp.textContent = time;
-      li.append(timestamp);
+      if (time) {
+        timestamp.textContent = time;
+        li.append(timestamp);
+      }
       if (severity) {
         li.classList?.add(`alert-${severity.toLowerCase()}`);
       }

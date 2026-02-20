@@ -13,7 +13,8 @@
       "@cloud-modules/*": ["src/modules/*"],
       "@cloud-router/*": ["router/*"],
       "@cloud-constants/*": ["constants/*"],
-      "@cloud-types/*": ["types/*"]
+      "@cloud-types/*": ["types/*"],
+      "@cloud-clients": ["src/data-hooks"]
     },
     "types": ["vite/client"]
   },

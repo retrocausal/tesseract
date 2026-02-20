@@ -59,9 +59,7 @@ function attachStateChangeListeners(tree: N_Ary<NavItem>) {
     const frame = () => {
       for (const [id, status] of bufferedUpdates) {
         const element = document.getElementById(id);
-        if (element) {
-          setStatusClass(element, status);
-        }
+        element && setStatusClass(element, status);
       }
       rafId = null;
       bufferedUpdates.clear();
@@ -101,7 +99,7 @@ export function onload(navInitializer: Scaffolder) {
       .then(run)
       .then(subscribeToRouterUpdates)
       .catch((e) => {
-        console.warn(e);
+        console.error(e);
       });
   }
   return Promise.reject();

@@ -16,9 +16,8 @@ export const AlertSchema = Type.Object({
   message: Type.String(),
   priority: Type.Number(),
   severity: SeveritySchema,
-
   // Frontend Enrichment
-  time: Type.String(),
+  time: Type.Optional(Type.String()),
   code: Type.String(),
   origin: Type.String(),
   suggestion: Type.String(),

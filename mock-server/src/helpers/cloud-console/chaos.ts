@@ -10,8 +10,6 @@ import { AddressInfo } from "net";
 import { ConsoleSchema } from "@tesseract/schema";
 type NavItem = Static<typeof ConsoleSchema.NavItemSchema>;
 
-const PORT = 17000;
-
 // --- 1. Tuning (The "Pulse") ---
 const TICK_RATE_MS = 500; // 2 updates per second (Visual smoothness)
 const MSGS_PER_TICK = 50; // ~100 events/second total

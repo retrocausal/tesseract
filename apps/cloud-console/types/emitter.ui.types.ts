@@ -5,6 +5,7 @@ const {
   LogDispatchSchema,
   StatusDispatchSchema,
   FocusedAlertDispatchSchema,
+  GenericDispatchSchema,
 } = ConsoleSchema;
 import { type Static } from "@sinclair/typebox";
 
@@ -16,6 +17,7 @@ export type AlertDispatch = Static<typeof AlertDispatchSchema>;
 export type LogDispatch = Static<typeof LogDispatchSchema>;
 export type StatusDispatch = Static<typeof StatusDispatchSchema>;
 export type FocusedAlertDispatch = Static<typeof FocusedAlertDispatchSchema>;
+export type Dispatch = Static<typeof GenericDispatchSchema>;
 
 // --------------------------------------------------------------------------
 // RUNTIME INTERFACES (The Event Map)
@@ -27,5 +29,3 @@ export type EmitterEventMap = {
   "log:dispatch": LogDispatch;
   "focused:alert": FocusedAlertDispatch;
 };
-
-export type Dispatch = AlertDispatch | LogDispatch | StatusDispatch;
