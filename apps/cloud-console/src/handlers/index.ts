@@ -5,27 +5,29 @@ import type { Scaffolder as SidebarBootstrapper } from "@cloud-types/nav.ui.type
 import { NavHooks } from "@cloud-clients";
 import { Dispatch } from "@cloud-types/emitter.ui.types";
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
-
-function broadcast(event: MessageEvent<string>) {
-  const data = JSON.parse(event.data) as Dispatch;
+function broadcast(event: MessageEvent<Dispatch>) {
+  const { data } = event;
   switch (data.kind) {
-    case "status:update":
-      // TS knows 'data' is StatusDispatch here.
-      EventPubSubProvider.emit(data.kind, data);
+    case "status:update": {
+      // Braces create a new local scope
+      const { kind, ...payload } = data; // payload is narrowed to Omit<StatusDispatch, 'kind'>
+      EventPubSubProvider.emit(kind, payload);
       break;
-
-    case "alert:dispatch":
-      // TS knows 'data' is AlertDispatch here.
-      EventPubSubProvider.emit(data.kind, data);
+    }
+    case "alert:dispatch": {
+      // Separate isolated scope
+      const { kind, ...payload } = data; // payload is narrowed to Omit<AlertDispatch, 'kind'>
+      EventPubSubProvider.emit(kind, payload);
       break;
-
-    case "log:dispatch":
-      // TS knows 'data' is LogDispatch here.
-      EventPubSubProvider.emit(data.kind, data);
+    }
+    case "log:dispatch": {
+      const { kind, ...payload } = data;
+      EventPubSubProvider.emit(kind, payload);
       break;
-
-    default:
+    }
+    default: {
       console.warn("Unknown Event Kind received:", (data as any).kind);
+    }
   }
 }
 

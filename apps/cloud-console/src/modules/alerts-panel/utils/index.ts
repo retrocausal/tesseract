@@ -22,6 +22,7 @@ export function buildFrame(
   currentState: Alert[],
 ): void {
   const state = currentState;
+  //fill the UI state up till we reach a max limit
   if (state.length < LIMIT) {
     let diff = LIMIT - state.length;
     while (diff > 0) {
@@ -30,7 +31,10 @@ export function buildFrame(
       if (next) state.push(next);
       else break;
     }
-  } else {
+  }
+  //if the UI state has a max limit of events,then replace the top 20
+  //in the state with top 20 in the heap
+  else {
     let index = BUFFER;
     while (index) {
       index--;

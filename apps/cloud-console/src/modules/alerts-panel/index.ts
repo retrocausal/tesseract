@@ -14,13 +14,18 @@ import {
   type AlertPanelState,
   type AlertScaffolding,
 } from "@cloud-types/alerts.ui.types";
+import { AlertDispatch } from "@cloud-types/emitter.ui.types";
 
-const { TIMEINTERVAL } = CONFIG;
+const { TIMEINTERVAL, RELEGATIONS } = CONFIG;
 
 function subscribe(heap: Heap<Alert>) {
-  return EventPubSubProvider.subscribe("alert:dispatch", (payload) =>
-    heap.add({ ...payload, time: currentTime() }),
-  );
+  function regulate(payload: Omit<AlertDispatch, "kind">) {
+    const size = heap.size;
+    const { severity } = payload;
+    if (size < RELEGATIONS[severity])
+      heap.add({ ...payload, time: currentTime() });
+  }
+  return EventPubSubProvider.subscribe("alert:dispatch", regulate);
 }
 
 function attachListeners(state: AlertPanelState, root: HTMLUListElement) {

@@ -31,8 +31,7 @@ function validate(data: SocketMessage) {
 function socketReceiver(event: MessageEvent<string>) {
   try {
     const data = JSON.parse(event.data) as SocketMessage;
-    const validatedData = validate(data);
-    self.postMessage(validatedData);
+    self.postMessage(validate(data));
   } catch (e) {
     console.error("Socket Parse Error", e);
   }

@@ -24,8 +24,8 @@ export type Dispatch = Static<typeof GenericDispatchSchema>;
 // --------------------------------------------------------------------------
 
 export type EmitterEventMap = {
-  "status:update": StatusDispatch;
-  "alert:dispatch": AlertDispatch;
-  "log:dispatch": LogDispatch;
+  "status:update": Omit<StatusDispatch, "kind">;
+  "alert:dispatch": Omit<AlertDispatch, "kind">;
+  "log:dispatch": Omit<LogDispatch, "kind">;
   "focused:alert": FocusedAlertDispatch;
 };
