@@ -16,33 +16,19 @@ export function currentTime(): string {
     minute: "2-digit",
   });
 }
+export function buildFrame(struct: GenericHeap<Alert>, state: Alert[]): void {
+  let count = BUFFER;
 
-export function buildFrame(
-  struct: GenericHeap<Alert>,
-  currentState: Alert[],
-): void {
-  const state = currentState;
-  //fill the UI state up till we reach a max limit
-  if (state.length < LIMIT) {
-    let diff = LIMIT - state.length;
-    while (diff > 0) {
-      diff--;
-      const next = struct.pop();
-      if (next) state.push(next);
-      else break;
+  while (count > 0) {
+    const next = struct.pop();
+    if (!next) break; // Heap is empty, stop pulling
+
+    // If we hit the 10-second conveyor belt limit, make room
+    if (state.length >= LIMIT) {
+      state.shift();
     }
-  }
-  //if the UI state has a max limit of events,then replace the top 20
-  //in the state with top 20 in the heap
-  else {
-    let index = BUFFER;
-    while (index) {
-      index--;
-      const next = struct.pop();
-      if (next) {
-        state.shift();
-        state.push(next);
-      } else break;
-    }
+
+    state.push(next);
+    count--;
   }
 }

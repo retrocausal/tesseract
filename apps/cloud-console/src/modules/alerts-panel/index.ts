@@ -1,6 +1,6 @@
 import { default as EventPubSubProvider } from "@cloud-utils/emitter";
 import { default as Heap } from "@tesseract/platform/structures/heap.struct";
-import render from "@cloud-modules/alerts-panel/view";
+import render, { initView } from "@cloud-modules/alerts-panel/view";
 import type { ComparatorFn } from "@tesseract/platform/types/interfaces/heap.interface";
 import {
   onClick,
@@ -16,31 +16,28 @@ import {
 } from "@cloud-types/alerts.ui.types";
 import { AlertDispatch } from "@cloud-types/emitter.ui.types";
 
-const { TIMEINTERVAL, RELEGATIONS } = CONFIG;
+const { TIMEINTERVAL, RELEGATIONS, LIMIT } = CONFIG;
+type RegulatedAlertDispatch = Omit<AlertDispatch, "kind">;
 
 function subscribe(heap: Heap<Alert>) {
-  function regulate(payload: Omit<AlertDispatch, "kind">) {
+  const regulate = (payload: RegulatedAlertDispatch) => {
     const size = heap.size;
     const { severity } = payload;
     if (size < RELEGATIONS[severity])
       heap.add({ ...payload, time: currentTime() });
-  }
+  };
   return EventPubSubProvider.subscribe("alert:dispatch", regulate);
 }
 
-function attachListeners(state: AlertPanelState, root: HTMLUListElement) {
-  root.onmouseenter = onMouseEnter;
-  root.onmouseleave = onMouseLeave;
-  root.onclick = (e) => onClick(e, root, state);
-}
-
 function initPanel(scaffold: AlertScaffolding) {
-  attachListeners(scaffold.state, scaffold.root);
+  scaffold.root.onmouseenter = onMouseEnter;
+  scaffold.root.onmouseleave = onMouseLeave;
+  scaffold.root.onclick = (e) => onClick(e, scaffold.state, scaffold.items);
   subscribe(scaffold.heap);
 }
 
 async function run(scaffold: AlertScaffolding) {
-  const { state, root, heap } = scaffold;
+  const { state, root, heap, items } = scaffold;
   const paint = () => {
     const now = performance.now();
     const diff = now - (state.lastRender ?? 0);
@@ -49,8 +46,7 @@ async function run(scaffold: AlertScaffolding) {
     const haveAlerts = heap.size;
     if (haveAlerts && canRender) {
       buildFrame(heap, state.stream);
-      root.replaceChildren();
-      render(state.stream, root);
+      render(state, items);
       state.lastRender = performance.now();
     }
     requestAnimationFrame(paint);
@@ -68,7 +64,8 @@ async function bootstrap(root: HTMLUListElement): Promise<AlertScaffolding> {
     lastRender: null,
     focussedAlert: null,
   };
-  const scaffold = { state, heap: MaxHeap, root };
+  const items = initView(LIMIT, root);
+  const scaffold = { state, heap: MaxHeap, root, items };
   initPanel(scaffold);
   return scaffold;
 }

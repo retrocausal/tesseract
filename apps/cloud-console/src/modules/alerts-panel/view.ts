@@ -1,38 +1,55 @@
 import "@cloud-modules/alerts-panel/styles/index.css";
-import type { Alert } from "@cloud-types/alerts.ui.types";
+import type { AlertPanelState } from "@cloud-types/alerts.ui.types";
 export default function render(
-  alerts: Alert[],
-  root: HTMLUListElement,
-  focusedAlert?: string | null,
+  state: AlertPanelState,
+  items: HTMLLIElement[],
 ): void {
-  const fragment = document.createDocumentFragment();
-  if (alerts.length) {
-    for (const alert of alerts) {
-      const { message, id, severity, time, resourceId } = alert;
-      const li = document.createElement("li");
+  const { stream, focussedAlert } = state;
+  for (let i = 0; i < stream.length; i++) {
+    const alert = stream[i];
+    const { message, id, severity, time, resourceId } = alert;
+    const li = items[i];
+    if (li) {
+      li.className = "item";
       li.setAttribute("id", id);
       li.dataset.resource = resourceId;
-      const alertHead = document.createElement("h4");
-      alertHead.textContent = message;
-      li.className = "item";
-      li.append(alertHead);
-      const timestamp = document.createElement("span");
-      if (time) {
-        timestamp.textContent = time;
-        li.append(timestamp);
+      const alertHead = li.querySelector("h4");
+      if (alertHead) {
+        alertHead.textContent = message;
+      }
+      const timestamp = li.querySelector("span");
+      if (timestamp) {
+        timestamp.textContent = time || "";
       }
       if (severity) {
         li.classList?.add(`alert-${severity.toLowerCase()}`);
       }
       if (
-        focusedAlert &&
-        id === focusedAlert &&
+        focussedAlert &&
+        id === focussedAlert &&
         !li.classList.contains("selected")
       ) {
         li.classList.add("selected");
       }
-      fragment.append(li);
     }
   }
-  root?.append(fragment);
+}
+
+export function initView(limit: number, root: HTMLUListElement) {
+  let i = limit;
+  const items: HTMLLIElement[] = new Array();
+  const fragment = document.createDocumentFragment();
+  while (i) {
+    const li = document.createElement("li");
+    const alertHead = document.createElement("h4");
+    const timestamp = document.createElement("span");
+    li.append(alertHead);
+    li.append(timestamp);
+    li.className = "item hidden";
+    items.push(li);
+    fragment.append(li);
+    i--;
+  }
+  root.append(fragment);
+  return items;
 }

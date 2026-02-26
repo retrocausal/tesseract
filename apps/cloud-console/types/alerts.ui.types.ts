@@ -19,4 +19,5 @@ export type AlertScaffolding = {
   state: AlertPanelState;
   heap: BinaryHeap<Alert>; // Uses the Inferred Alert Type
   root: HTMLUListElement;
+  items: HTMLLIElement[];
 };

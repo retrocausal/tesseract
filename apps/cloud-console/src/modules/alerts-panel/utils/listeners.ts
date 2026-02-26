@@ -15,8 +15,8 @@ export function onMouseLeave(e: Event) {
 
 export function onClick(
   e: Event,
-  alertList: HTMLUListElement,
   state: AlertPanelState,
+  items: HTMLLIElement[],
 ) {
   const target = e?.target;
   if (target instanceof HTMLElement) {
@@ -37,7 +37,6 @@ export function onClick(
           });
       }
     }
-    alertList.replaceChildren();
-    render(state.stream, alertList, state.focussedAlert);
+    render(state, items);
   }
 }
