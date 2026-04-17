@@ -61,7 +61,7 @@ class BinaryHeap<T> extends Heap<T> {
           if (C1 !== undefined && C2 !== undefined) {
             const result = this.comparator(
               this.collection[C1],
-              this.collection[C2]
+              this.collection[C2],
             );
             if (result > 0) {
               swappable = C2;
@@ -71,7 +71,7 @@ class BinaryHeap<T> extends Heap<T> {
           }
           const result = this.comparator(
             this.collection[parent],
-            this.collection[swappable]
+            this.collection[swappable],
           );
           if (result > 0) {
             this.swap(parent, swappable);
@@ -98,7 +98,7 @@ class BinaryHeap<T> extends Heap<T> {
     while (parent !== undefined) {
       const result = this.comparator(
         this.collection[parent],
-        this.collection[index]
+        this.collection[index],
       );
       if (result > 0) {
         this.swap(parent, index);

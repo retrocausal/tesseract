@@ -39,7 +39,7 @@ export function harmonize(tree: N_Ary<NavItem>) {
 }
 
 export const propagateState = (
-  payload: StatusDispatch,
+  payload: Omit<StatusDispatch, "kind">,
   nodes: Map<string, N_ary_Node<NavItem>>,
 ) => {
   const { id, status } = payload;
